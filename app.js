@@ -75,7 +75,6 @@ dImageCopper.addEventListener("mouseup", e => {
         // cropInfo.areaX = cropInfo
         cropInfo.moveStart = false;
     }
-
 });
 
 const dCropButton = document.querySelector("#crop-btn");
@@ -113,3 +112,15 @@ function crop() {
         navigator.clipboard.write([imageData]);
     });
 }
+
+window.addEventListener("keydown", e => {
+    if( e.key === "-" && e.ctrlKey ) {
+        e.preventDefault();
+        console.log(("CTRL+-"));
+    }
+
+    if( e.key === "=" && e.ctrlKey ) {
+        e.preventDefault();
+        console.log(("CTRL++"));
+    }
+});
