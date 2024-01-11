@@ -1,14 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Processor</title>
+
+    <link rel="stylesheet" href="./style.css">
 </head>
+
 <body>
 
-    <input type="file" name="photo">
-    <script src="./app.js" type="module"></script>
+    <aside></aside>
 
+    <div class="working-area">
+        <input type="file" name="photo">
+
+        <div class="image-cropper">
+            <div class="image-wrap">
+                <div class="image-mask"></div>
+            </div>
+
+            <div class="crop-area">
+                <div class="crop-handle handle-top handle-left"></div>
+                <div class="crop-handle handle-top handle-hmid"></div>
+                <div class="crop-handle handle-top handle-right"></div>
+                <div class="crop-handle handle-vmid handle-left"></div>
+                <div class="crop-handle handle-vmid handle-right"></div>
+                <div class="crop-handle handle-bottom handle-left"></div>
+                <div class="crop-handle handle-bottom handle-hmid"></div>
+                <div class="crop-handle handle-bottom handle-right"></div>
+            </div>
+        </div>
+    </div>
+
+    <button id="crop-btn">Crop</button>
+
+    <script src="./app.js" type="module"></script>
 </body>
+
 </html>
