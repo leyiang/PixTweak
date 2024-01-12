@@ -160,19 +160,37 @@ dImageCopper.addEventListener("mousemove", e => {
             if( cropInfo.resizeL ) {
                 cropInfo.areaX = cropInfo.areaOldX + dx;
                 cropInfo.areaW = cropInfo.oldAreaW - dx;
+
+                if( cropInfo.areaX < 0 ) {
+                    let offset = cropInfo.areaX;
+                    cropInfo.areaX = 0;
+                    cropInfo.areaW += offset;
+                }
             }
 
             if (cropInfo.resizeR) {
                 cropInfo.areaW = cropInfo.oldAreaW + dx;
+                if( cropInfo.areaW + cropInfo.areaX > imgInfo.cw ) {
+                    cropInfo.areaW = imgInfo.cw - cropInfo.areaX;
+                }
             }
 
             if (cropInfo.resizeB) {
                 cropInfo.areaH = cropInfo.oldAreaH + dy;
+                if( cropInfo.areaH + cropInfo.areaY > imgInfo.ch ) {
+                    cropInfo.areaH = imgInfo.ch - cropInfo.areaY;
+                }
             }
 
             if (cropInfo.resizeT) {
                 cropInfo.areaY = cropInfo.areaOldY + dy;
                 cropInfo.areaH = cropInfo.oldAreaH - dy;
+
+                if( cropInfo.areaY < 0 ) {
+                    let offset = cropInfo.areaY;
+                    cropInfo.areaY = 0;
+                    cropInfo.areaH += offset;
+                }
             }
 
             updateArea();
@@ -202,12 +220,8 @@ function resetMouse(e) {
     dImageCopper.classList.remove("resize-bottom");
 }
 
+window.addEventListener("mouseup", resetMouse);
 dImageCopper.addEventListener("mouseup", resetMouse);
-dImageCopper.addEventListener("mouseout", e => {
-    if( e.target === dImageCopper ) {
-        resetMouse();
-    }
-});
 
 const dCropButton = document.querySelector("#crop-btn");
 const dCropImg = document.querySelector(".img-el");
@@ -220,7 +234,6 @@ function loadImage(src) {
         image.src = src;
     });
 }
-
 
 dCropButton.addEventListener("click", crop);
 
