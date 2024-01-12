@@ -19,8 +19,11 @@ const dCropArea = document.querySelector(".crop-area");
 const cropInfo = {
     moveStart: false,
     resize: false,
-    resizeW: false,
-    resizeH: false,
+
+    resizeL: false,
+    resizeR: false,
+    resizeT: false,
+    resizeB: false,
 
     areaOldX: 0,
     areaOldY: 0,
@@ -71,12 +74,23 @@ dImageCopper.addEventListener("mousedown", e => {
         cropInfo.oldAreaH = cropInfo.areaH;
         cropInfo.oldAreaW = cropInfo.areaW;
 
-        if (target.classList.contains("handle-left") || target.classList.contains("handle-right")) {
-            cropInfo.resizeW = true;
+        cropInfo.areaOldX = cropInfo.areaX;
+        cropInfo.areaOldY = cropInfo.areaY;
+
+        if (target.classList.contains("handle-left") ) {
+            cropInfo.resizeL = true;
         }
 
-        if (target.classList.contains("handle-top") || target.classList.contains("handle-bottom")) {
-            cropInfo.resizeH = true;
+        if (target.classList.contains("handle-right") ) {
+            cropInfo.resizeR = true;
+        }
+
+        if (target.classList.contains("handle-top") ) {
+            cropInfo.resizeT = true;
+        }
+
+        if (target.classList.contains("handle-bottom") ) {
+            cropInfo.resizeB = true;
         }
     }
 });
@@ -101,14 +115,22 @@ dImageCopper.addEventListener("mousemove", e => {
         }
 
         if (cropInfo.resize) {
+            if( cropInfo.resizeL ) {
+                cropInfo.areaX = cropInfo.areaOldX + dx;
+                cropInfo.areaW = cropInfo.oldAreaW - dx;
+            }
 
-            if (cropInfo.resizeW) {
+            if (cropInfo.resizeR) {
                 cropInfo.areaW = cropInfo.oldAreaW + dx;
             }
 
-            if (cropInfo.resizeH) {
+            if (cropInfo.resizeB) {
                 cropInfo.areaH = cropInfo.oldAreaH + dy;
-                console.log( cropInfo.areaH, cropInfo.oldAreaH, dy, cropInfo.currentY, cropInfo.startY );
+            }
+
+            if (cropInfo.resizeT) {
+                cropInfo.areaY = cropInfo.areaOldY + dy;
+                cropInfo.areaH = cropInfo.oldAreaH - dy;
             }
 
             updateArea();
@@ -123,8 +145,10 @@ dImageCopper.addEventListener("mouseup", e => {
     }
 
     cropInfo.resize = false;
-    cropInfo.resizeW = false;
-    cropInfo.resizeH = false;
+    cropInfo.resizeR = false;
+    cropInfo.resizeT = false;
+    cropInfo.resizeL = false;
+    cropInfo.resizeB = false;
 
     cropInfo.oldAreaH = cropInfo.areaH;
     cropInfo.oldAreaW = cropInfo.areaW;
