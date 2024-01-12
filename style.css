@@ -19,6 +19,10 @@ body {
     cursor: none;
 }
 
+.image-cropper.resizing  > *  {
+    cursor: none;
+}
+
 .image-wrap {
     position: relative;
     display: inline-block;

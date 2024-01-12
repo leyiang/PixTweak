@@ -6,12 +6,26 @@ document.onpaste = (evt) => {
     console.log(url);
     const image = new Image();
     image.addEventListener("load", () => {
-        document.body.appendChild(image);
+        getImage( image );
     });
     image.src = url;
     console.log(file instanceof Blob);
 };
 
+function getImage( image ) {
+    cropInfo.image = image;
+    dCropImgWarp.querySelector("img")?.remove?.();
+    dCropImgWarp.prepend(image);
+
+    imgInfo.naturalWidth = image.naturalWidth;
+    imgInfo.naturalHeight = image.naturalHeight;
+
+    imgInfo.w = imgInfo.naturalWidth;
+    imgInfo.h = imgInfo.naturalHeight;
+
+    imgInfo.cw = imgInfo.naturalWidth;
+    imgInfo.ch = imgInfo.naturalHeight;
+}
 
 const dImageCopper = document.querySelector(".image-cropper");
 const dCropArea = document.querySelector(".crop-area");
@@ -201,18 +215,6 @@ function loadImage(src) {
         image.src = src;
     });
 }
-
-
-loadImage("./sample.png").then(image => {
-    cropInfo.image = image;
-    dCropImgWarp.prepend(image);
-
-    image.width = 512;
-    image.height = 512;
-
-    imgInfo.naturalWidth = image.naturalWidth;
-    imgInfo.naturalHeight = image.naturalHeight;
-});
 
 
 dCropButton.addEventListener("click", crop);
