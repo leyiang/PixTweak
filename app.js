@@ -106,9 +106,17 @@ dImageCopper.addEventListener("mousemove", e => {
 
         if (cropInfo.moveStart) {
             cropInfo.areaX = cropInfo.areaOldX + dx;
-            cropInfo.areaY =  cropInfo.areaOldY + dy;
+            if( cropInfo.areaX < 0 ) cropInfo.areaX = 0;
+            if( cropInfo.areaX + cropInfo.areaW > 512 ) {
+                cropInfo.areaX = 512 - cropInfo.areaW;
+            }
 
-            console.log( dx, dy );
+            cropInfo.areaY =  cropInfo.areaOldY + dy;
+            if( cropInfo.areaY < 0 ) cropInfo.areaY = 0;
+            if( cropInfo.areaY + cropInfo.areaH > 512 ) {
+                cropInfo.areaY = 512 - cropInfo.areaH;
+            }
+
             // cropInfo.areaX = cropInfo.areaOldX + dx;
             // cropInfo.areaY = cropInfo.areaOldY + dy;
             updateArea();
@@ -138,12 +146,12 @@ dImageCopper.addEventListener("mousemove", e => {
     }
 });
 
-dImageCopper.addEventListener("mouseup", e => {
+function resetMouse(e) {
     if (cropInfo.moveStart) {
         // cropInfo.areaX = cropInfo
-        cropInfo.moveStart = false;
     }
 
+    cropInfo.moveStart = false;
     cropInfo.resize = false;
     cropInfo.resizeR = false;
     cropInfo.resizeT = false;
@@ -152,6 +160,13 @@ dImageCopper.addEventListener("mouseup", e => {
 
     cropInfo.oldAreaH = cropInfo.areaH;
     cropInfo.oldAreaW = cropInfo.areaW;
+}
+
+dImageCopper.addEventListener("mouseup", resetMouse);
+dImageCopper.addEventListener("mouseout", e => {
+    if( e.target === dImageCopper ) {
+        resetMouse();
+    }
 });
 
 const dCropButton = document.querySelector("#crop-btn");
