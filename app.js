@@ -12,6 +12,11 @@ document.onpaste = (evt) => {
     console.log(file instanceof Blob);
 };
 
+/** For Test */
+loadImage("./sample.png").then( image => {
+    getImage( image );
+});
+
 function getImage( image ) {
     cropInfo.image = image;
     dCropImgWarp.querySelector("img")?.remove?.();
