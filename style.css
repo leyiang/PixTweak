@@ -4,6 +4,8 @@ body {
 
 .image-cropper {
     position: relative;
+    margin-top: 200px;;
+    margin-left: 200px;
 }
 
 .image-cropper * {
