@@ -47,9 +47,11 @@ function updateArea() {
 }
 
 dImageCopper.addEventListener("mousedown", e => {
+
     if (e.target === dCropArea) {
-        cropInfo.startX = e.offsetX;
-        cropInfo.startY = e.offsetY;
+        cropInfo.startX = e.clientX;
+        cropInfo.startY = e.clientY;
+
         cropInfo.moveStart = true;
 
         cropInfo.areaOldX = cropInfo.areaX;
@@ -61,6 +63,9 @@ dImageCopper.addEventListener("mousedown", e => {
     const { target } = e;
 
     if (target.classList.contains("crop-handle")) {
+        cropInfo.startX = e.clientX;
+        cropInfo.startY = e.clientY;
+
         cropInfo.resize = true;
 
         cropInfo.oldAreaH = cropInfo.areaH;
@@ -77,16 +82,19 @@ dImageCopper.addEventListener("mousedown", e => {
 });
 
 dImageCopper.addEventListener("mousemove", e => {
+
     if (cropInfo.moveStart || cropInfo.resize) {
-        cropInfo.currentX = e.offsetX;
-        cropInfo.currentY = e.offsetY;
+        cropInfo.currentX = e.clientX;
+        cropInfo.currentY = e.clientY;
 
         const dx = cropInfo.currentX - cropInfo.startX;
         const dy = cropInfo.currentY - cropInfo.startY;
 
         if (cropInfo.moveStart) {
-            cropInfo.areaX += dx;
-            cropInfo.areaY += dy;
+            cropInfo.areaX = cropInfo.areaOldX + dx;
+            cropInfo.areaY =  cropInfo.areaOldY + dy;
+
+            console.log( dx, dy );
             // cropInfo.areaX = cropInfo.areaOldX + dx;
             // cropInfo.areaY = cropInfo.areaOldY + dy;
             updateArea();
@@ -100,6 +108,7 @@ dImageCopper.addEventListener("mousemove", e => {
 
             if (cropInfo.resizeH) {
                 cropInfo.areaH = cropInfo.oldAreaH + dy;
+                console.log( cropInfo.areaH, cropInfo.oldAreaH, dy, cropInfo.currentY, cropInfo.startY );
             }
 
             updateArea();
