@@ -16,6 +16,13 @@ document.onpaste = (evt) => {
 const dImageCopper = document.querySelector(".image-cropper");
 const dCropArea = document.querySelector(".crop-area");
 
+const imgInfo = {
+    w: 512,
+    h: 512,
+    cw: 512,
+    ch: 512,
+}
+
 const cropInfo = {
     moveStart: false,
     resize: false,
@@ -107,14 +114,15 @@ dImageCopper.addEventListener("mousemove", e => {
         if (cropInfo.moveStart) {
             cropInfo.areaX = cropInfo.areaOldX + dx;
             if( cropInfo.areaX < 0 ) cropInfo.areaX = 0;
-            if( cropInfo.areaX + cropInfo.areaW > 512 ) {
-                cropInfo.areaX = 512 - cropInfo.areaW;
+            if( cropInfo.areaX + cropInfo.areaW > imgInfo.cw ) {
+                cropInfo.areaX = imgInfo.cw - cropInfo.areaW;
             }
 
             cropInfo.areaY =  cropInfo.areaOldY + dy;
+
             if( cropInfo.areaY < 0 ) cropInfo.areaY = 0;
-            if( cropInfo.areaY + cropInfo.areaH > 512 ) {
-                cropInfo.areaY = 512 - cropInfo.areaH;
+            if( cropInfo.areaY + cropInfo.areaH > imgInfo.ch ) {
+                cropInfo.areaY = imgInfo.ch - cropInfo.areaH;
             }
 
             // cropInfo.areaX = cropInfo.areaOldX + dx;
@@ -185,6 +193,12 @@ function loadImage(src) {
 loadImage("./sample.png").then(image => {
     cropInfo.image = image;
     dCropImgWarp.prepend(image);
+
+    image.width = 512;
+    image.height = 512;
+
+    imgInfo.naturalWidth = image.naturalWidth;
+    imgInfo.naturalHeight = image.naturalHeight;
 });
 
 
@@ -194,15 +208,47 @@ function crop() {
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
 
-    canvas.width = cropInfo.areaW;
-    canvas.height = cropInfo.areaH;
+    const scaleFactor = imgInfo.naturalWidth / imgInfo.cw;
+    console.log( imgInfo.cw, imgInfo.naturalWidth, scaleFactor);
 
-    ctx.drawImage(cropInfo.image, cropInfo.areaX, cropInfo.areaY, cropInfo.areaW, cropInfo.areaH, 0, 0, cropInfo.areaW, cropInfo.areaH);
+    let w = cropInfo.areaW, h = cropInfo.areaH;
+
+    w *= scaleFactor;
+    h *= scaleFactor;
+
+    canvas.width = w;
+    canvas.height = h;
+
+    ctx.drawImage(cropInfo.image, cropInfo.areaX *= scaleFactor, cropInfo.areaY *= scaleFactor, cropInfo.areaW *= scaleFactor, cropInfo.areaH *= scaleFactor, 0, 0, w, h);
 
     canvas.toBlob(blob => {
+        // Copy To Clipboard
         const imageData = new ClipboardItem({ "image/png": blob });
         navigator.clipboard.write([imageData]);
+
+        // Download File
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.target = "_blank";
+        a.download = "result.png";
+        a.href = url;
+        a.click();
     });
+
+}
+
+let factor = 1;
+
+function scale() {
+    factor += .25;
+
+    imgInfo.cw = imgInfo.w * factor;
+    imgInfo.ch = imgInfo.h * factor;
+
+    cropInfo.image.style.width = `${imgInfo.cw}px`;
+    cropInfo.image.style.height = `${imgInfo.ch}px`;
+
+    console.log(cropInfo.image);
 }
 
 window.addEventListener("keydown", e => {
@@ -213,6 +259,6 @@ window.addEventListener("keydown", e => {
 
     if (e.key === "=" && e.ctrlKey) {
         e.preventDefault();
-        console.log(("CTRL++"));
+        scale();
     }
 });
