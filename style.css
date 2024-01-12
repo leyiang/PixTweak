@@ -10,6 +10,15 @@ body {
     user-select: none;
 }
 
+.image-cropper.resizing  {
+    cursor: none;
+} 
+
+.image-cropper.resizing  .crop-handle  {
+    opacity: 0;
+    cursor: none;
+}
+
 .image-wrap {
     position: relative;
     display: inline-block;
@@ -54,6 +63,7 @@ body {
     box-sizing: border-box;
 
     user-select: none;
+    transition: opacity .3s;
 }
 
 /**

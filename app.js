@@ -73,6 +73,9 @@ dImageCopper.addEventListener("mousedown", e => {
     const { target } = e;
 
     if (target.classList.contains("crop-handle")) {
+
+        dImageCopper.classList.add("resizing");
+
         cropInfo.startX = e.clientX;
         cropInfo.startY = e.clientY;
 
@@ -86,18 +89,22 @@ dImageCopper.addEventListener("mousedown", e => {
 
         if (target.classList.contains("handle-left") ) {
             cropInfo.resizeL = true;
+            dImageCopper.classList.add("resize-left");
         }
 
         if (target.classList.contains("handle-right") ) {
             cropInfo.resizeR = true;
+            dImageCopper.classList.add("resize-right");
         }
 
         if (target.classList.contains("handle-top") ) {
             cropInfo.resizeT = true;
+            dImageCopper.classList.add("resize-top");
         }
 
         if (target.classList.contains("handle-bottom") ) {
             cropInfo.resizeB = true;
+            dImageCopper.classList.add("resize-bottom");
         }
     }
 });
@@ -168,6 +175,12 @@ function resetMouse(e) {
 
     cropInfo.oldAreaH = cropInfo.areaH;
     cropInfo.oldAreaW = cropInfo.areaW;
+
+    dImageCopper.classList.remove("resizing");
+    dImageCopper.classList.remove("resize-left");
+    dImageCopper.classList.remove("resize-right");
+    dImageCopper.classList.remove("resize-top");
+    dImageCopper.classList.remove("resize-bottom");
 }
 
 dImageCopper.addEventListener("mouseup", resetMouse);
