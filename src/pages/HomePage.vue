@@ -23,6 +23,11 @@ import { useCropStore } from "@/stores/CropStore";
 
 const cropStore = useCropStore();
 
+function isImage( mimeString: string ) : boolean {
+    const allowed = ["image/png", "image/jpeg", "image/gif"];
+    return allowed.includes( mimeString );
+}
+
 document.onpaste = (evt) => {
     const data = evt.clipboardData;
 
@@ -32,6 +37,17 @@ document.onpaste = (evt) => {
     }
 
     const file = data.files[0];
+
+    if( ! file ) {
+        // clipboard data is not file
+        return;
+    }
+
+    if( ! isImage(file.type) ) {
+        console.log("onpaste event triggerd, file is not image");
+        return;
+    }
+    
     const url = URL.createObjectURL(file);
 
     loadImage( url ).then(image => {
