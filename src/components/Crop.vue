@@ -38,8 +38,11 @@ function crop() {
     const canvas = document.createElement("canvas");
 
     // for getContext returning null, it can happen if you have already requested a different type of context.
-    // we know for sure, ctx in only request once
-    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+    const ctx = canvas.getContext("2d");
+
+    if( ctx === null ) {
+        throw new Error("Context2D is null");
+    }
 
     const scaleFactor = imgStore.info.naturalWidth / imgStore.info.cw;
     console.log(imgStore.info.cw, imgStore.info.naturalWidth, scaleFactor);
