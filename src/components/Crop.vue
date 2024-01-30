@@ -3,7 +3,11 @@
 
     <div class="image-cropper" :class="imgCropperClass" @mouseup="resetMouse" @mousemove="mousemove" @mousedown="mousedown">
         <div class="image-wrap">
-            <img :src="imgStore.image.src" v-if="imgStore.image">
+            <img
+                v-if="cropStore.image"
+                :src="cropStore.image.src"
+                :style="imageStyle"
+            >
             <div class="image-mask"></div>
         </div>
 
@@ -23,15 +27,15 @@
 
 <script setup lang="ts">
 import "@/assets/style/components/CropStyle.css"
-import { useImageStore } from "@/stores/ImageStore";
+import { useCropStore } from "@/stores/CropStore";
 import { downloadCanvas } from "@/utils";
 import { computed, reactive, ref } from "vue";
-const imgStore = useImageStore();
 
+const cropStore = useCropStore();
 const dCropArea = ref(null);
 
 function crop() {
-    if(imgStore.image === null) {
+    if(cropStore.image === null) {
         throw new Error("Image cannot be null");
     }
 
@@ -44,8 +48,8 @@ function crop() {
         throw new Error("Context2D is null");
     }
 
-    const scaleFactor = imgStore.info.naturalWidth / imgStore.info.cw;
-    console.log(imgStore.info.cw, imgStore.info.naturalWidth, scaleFactor);
+    const imgInfo = cropStore.info;
+    const scaleFactor = imgInfo.naturalWidth / imgInfo.cw;
 
     let w = cropInfo.areaW, h = cropInfo.areaH;
 
@@ -55,7 +59,7 @@ function crop() {
     canvas.width = w;
     canvas.height = h;
 
-    ctx.drawImage(imgStore.image, cropInfo.areaX *= scaleFactor, cropInfo.areaY *= scaleFactor, cropInfo.areaW *= scaleFactor, cropInfo.areaH *= scaleFactor, 0, 0, w, h);
+    ctx.drawImage(cropStore.image, cropInfo.areaX *= scaleFactor, cropInfo.areaY *= scaleFactor, cropInfo.areaW *= scaleFactor, cropInfo.areaH *= scaleFactor, 0, 0, w, h);
 
     downloadCanvas( canvas, "save" );
 }
@@ -102,6 +106,13 @@ const cropAreaStyle = computed(() => {
         width: cropInfo.areaW + "px",
         height: cropInfo.areaH + "px",
         transform: `translate(${cropInfo.areaX}px, ${cropInfo.areaY}px)`
+    }
+});
+
+const imageStyle = computed(() => {
+    return {
+        width: cropStore.info.cw + "px",
+        height: cropStore.info.ch + "px",
     }
 });
 
@@ -166,7 +177,7 @@ function mousedown(e: MouseEvent) {
 }
 
 function mousemove(e: MouseEvent) {
-    console.log("move", cropInfo.moveStart);
+    const imgInfo = cropStore.info;
 
     if (cropInfo.moveStart || cropInfo.resize) {
         cropInfo.currentX = e.clientX;
@@ -178,19 +189,16 @@ function mousemove(e: MouseEvent) {
         if (cropInfo.moveStart) {
             cropInfo.areaX = cropInfo.areaOldX + dx;
             if (cropInfo.areaX < 0) cropInfo.areaX = 0;
-            if (cropInfo.areaX + cropInfo.areaW > imgStore.info.cw) {
-                cropInfo.areaX = imgStore.info.cw - cropInfo.areaW;
+            if (cropInfo.areaX + cropInfo.areaW > imgInfo.cw) {
+                cropInfo.areaX = imgInfo.cw - cropInfo.areaW;
             }
 
             cropInfo.areaY = cropInfo.areaOldY + dy;
 
             if (cropInfo.areaY < 0) cropInfo.areaY = 0;
-            if (cropInfo.areaY + cropInfo.areaH > imgStore.info.ch) {
-                cropInfo.areaY = imgStore.info.ch - cropInfo.areaH;
+            if (cropInfo.areaY + cropInfo.areaH > imgInfo.ch) {
+                cropInfo.areaY = imgInfo.ch - cropInfo.areaH;
             }
-
-            // cropInfo.areaX = cropInfo.areaOldX + dx;
-            // cropInfo.areaY = cropInfo.areaOldY + dy;
         }
 
         if (cropInfo.resize) {
@@ -207,15 +215,15 @@ function mousemove(e: MouseEvent) {
 
             if (cropInfo.resizeR) {
                 cropInfo.areaW = cropInfo.oldAreaW + dx;
-                if (cropInfo.areaW + cropInfo.areaX > imgStore.info.cw) {
-                    cropInfo.areaW = imgStore.info.cw - cropInfo.areaX;
+                if (cropInfo.areaW + cropInfo.areaX > imgInfo.cw) {
+                    cropInfo.areaW = imgInfo.cw - cropInfo.areaX;
                 }
             }
 
             if (cropInfo.resizeB) {
                 cropInfo.areaH = cropInfo.oldAreaH + dy;
-                if (cropInfo.areaH + cropInfo.areaY > imgStore.info.ch) {
-                    cropInfo.areaH = imgStore.info.ch - cropInfo.areaY;
+                if (cropInfo.areaH + cropInfo.areaY > imgInfo.ch) {
+                    cropInfo.areaH = imgInfo.ch - cropInfo.areaY;
                 }
             }
 

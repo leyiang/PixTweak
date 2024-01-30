@@ -18,10 +18,10 @@
 import "@/assets/style/pages/HomePageStyle.css";
 import Crop from "@/components/Crop.vue";
 import SampleImage from "@/assets/images/sample.png";
-import { useImageStore } from "@/stores/ImageStore";
 import { loadImage } from "@/utils";
+import { useCropStore } from "@/stores/CropStore";
 
-const imgStore = useImageStore();
+const cropStore = useCropStore();
 
 // document.onpaste = (evt) => {
 //     const dT = evt.clipboardData || window.clipboardData;
@@ -40,40 +40,25 @@ const imgStore = useImageStore();
 /** For Test */
 
 loadImage( SampleImage ).then( image => {
-    imgStore.setImage( image );
+    cropStore.setImage( image );
 });
-
-
-// function updateArea() {
-//     dCropArea.style.transform = `translate(${cropInfo.areaX}px, ${cropInfo.areaY}px)`;
-//     dCropArea.style.width = `${cropInfo.areaW}px`;
-//     dCropArea.style.height = `${cropInfo.areaH}px`;
-// }
 
 
 // let factor = 1;
 
 // function scale() {
-//     factor += .25;
-
-//     imgInfo.cw = imgInfo.w * factor;
-//     imgInfo.ch = imgInfo.h * factor;
-
-//     cropInfo.image.style.width = `${imgInfo.cw}px`;
-//     cropInfo.image.style.height = `${imgInfo.ch}px`;
-
-//     console.log(cropInfo.image);
 // }
 
-// window.addEventListener("keydown", e => {
-//     if (e.key === "-" && e.ctrlKey) {
-//         e.preventDefault();
-//         console.log(("CTRL+-"));
-//     }
+window.addEventListener("keydown", e => {
+    if (e.key === "-" && e.ctrlKey) {
+        e.preventDefault();
+        console.log(("CTRL+-"));
+    }
 
-//     if (e.key === "=" && e.ctrlKey) {
-//         e.preventDefault();
-//         scale();
-//     }
-// });
+    if (e.key === "=" && e.ctrlKey) {
+        e.preventDefault();
+
+        cropStore.upscale();
+    }
+});
 </script>
