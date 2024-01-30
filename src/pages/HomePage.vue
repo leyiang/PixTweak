@@ -19,6 +19,7 @@ import "@/assets/style/pages/HomePageStyle.css";
 import Crop from "@/components/Crop.vue";
 import SampleImage from "@/assets/images/sample.png";
 import { useImageStore } from "@/stores/ImageStore";
+import { loadImage } from "@/utils";
 
 const imgStore = useImageStore();
 
@@ -48,15 +49,6 @@ loadImage( SampleImage ).then( image => {
 //     dCropArea.style.width = `${cropInfo.areaW}px`;
 //     dCropArea.style.height = `${cropInfo.areaH}px`;
 // }
-
-
-function loadImage(src: string) : Promise<HTMLImageElement> {
-    return new Promise(resolve => {
-        const image = new Image();
-        image.addEventListener("load", () => resolve(image));
-        image.src = src;
-    });
-}
 
 
 // let factor = 1;

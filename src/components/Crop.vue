@@ -24,6 +24,7 @@
 <script setup lang="ts">
 import "@/assets/style/components/CropStyle.css"
 import { useImageStore } from "@/stores/ImageStore";
+import { downloadCanvas } from "@/utils";
 import { computed, reactive, ref } from "vue";
 const imgStore = useImageStore();
 
@@ -53,24 +54,7 @@ function crop() {
 
     ctx.drawImage(imgStore.image, cropInfo.areaX *= scaleFactor, cropInfo.areaY *= scaleFactor, cropInfo.areaW *= scaleFactor, cropInfo.areaH *= scaleFactor, 0, 0, w, h);
 
-    canvas.toBlob(blob => {
-        if( blob === null ) {
-            throw new Error("Get empty blob");
-        }
-
-        // Copy To Clipboard
-        const imageData = new ClipboardItem({ "image/png": blob });
-        navigator.clipboard.write([imageData]);
-
-        // Download File
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.target = "_blank";
-        a.download = "result.png";
-        a.href = url;
-        a.click();
-    });
-
+    downloadCanvas( canvas, "save" );
 }
 
 const cropInfo = reactive({
