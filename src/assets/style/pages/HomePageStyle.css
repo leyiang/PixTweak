@@ -2,9 +2,9 @@ body {
     margin: 0;
 }
 
-
 body,
 html,
+#app,
 .app-wrap {
     height: 100%;
 }
@@ -17,4 +17,7 @@ html,
 .work-wrap {
     flex: 1;
     display: flex;
+    background: #EEE;
+    align-items: center;
+    justify-content: center;
 }

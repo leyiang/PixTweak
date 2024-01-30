@@ -6,7 +6,6 @@
 
         <main class="work-wrap">
             <div class="working-area">
-                <input type="file" name="photo">
                 <Crop></Crop>
             </div>
 

@@ -64,6 +64,12 @@ function crop() {
     downloadCanvas( canvas, "save" );
 }
 
+document.addEventListener("keydown", e => {
+    if( e.key === "Enter" ) {
+        crop(); 
+    }
+});
+
 const cropInfo = reactive({
     moveStart: false,
     resize: false,
