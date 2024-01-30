@@ -80,8 +80,7 @@ window.addEventListener("keydown", e => {
 
     if (e.key === "=" && e.ctrlKey) {
         e.preventDefault();
-
-        cropStore.upscale();
+        workStore.upscale();
     }
 });
 </script>

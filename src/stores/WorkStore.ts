@@ -58,5 +58,17 @@ export const useWorkStore = defineStore('work-store', {
       this.image = image;
       this.scale = getDefaultScale( this.imageInfo, this.size );
     },
+
+    upscale( factor = .25) {
+      this.scale += factor;
+      // cropInfo.image.style.width = `${imgInfo.cw}px`;
+      // cropInfo.image.style.height = `${imgInfo.ch}px`;
+
+      // console.log(cropInfo.image);
+    },
+
+    downscale() {
+
+    },
   },
 })

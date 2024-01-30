@@ -51,7 +51,7 @@ function crop() {
     }
 
     const imgInfo = workStore.imageInfo;
-    const scaleFactor = imgInfo.naturalWidth / imgInfo.cw;
+    const scaleFactor = imgInfo.nw / imgInfo.cw;
 
     let w = cropInfo.areaW, h = cropInfo.areaH;
 
