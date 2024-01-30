@@ -106,10 +106,6 @@ const cropAreaStyle = computed(() => {
 });
 
 function resetMouse(e: MouseEvent) {
-    if (cropInfo.moveStart) {
-        // cropInfo.areaX = cropInfo
-    }
-
     cropInfo.moveStart = false;
     cropInfo.resize = false;
     cropInfo.resizeR = false;
@@ -119,12 +115,6 @@ function resetMouse(e: MouseEvent) {
 
     cropInfo.oldAreaH = cropInfo.areaH;
     cropInfo.oldAreaW = cropInfo.areaW;
-
-    // dImageCopper.classList.remove("resizing");
-    // dImageCopper.classList.remove("resize-left");
-    // dImageCopper.classList.remove("resize-right");
-    // dImageCopper.classList.remove("resize-top");
-    // dImageCopper.classList.remove("resize-bottom");
 }
 
 window.addEventListener("mouseup", resetMouse);
