@@ -4,8 +4,8 @@
     <div class="image-cropper" :class="imgCropperClass" @mouseup="resetMouse" @mousemove="mousemove" @mousedown="mousedown">
         <div class="image-wrap">
             <img
-                v-if="cropStore.image"
-                :src="cropStore.image.src"
+                v-if="workStore.image"
+                :src="workStore.image.src"
                 :style="imageStyle"
             >
             <div class="image-mask"></div>
@@ -28,14 +28,16 @@
 <script setup lang="ts">
 import "@/assets/style/components/CropStyle.css"
 import { useCropStore } from "@/stores/CropStore";
+import { useWorkStore } from "@/stores/WorkStore";
 import { downloadCanvas } from "@/utils";
 import { computed, reactive, ref } from "vue";
 
 const cropStore = useCropStore();
+const workStore = useWorkStore();
 const dCropArea = ref(null);
 
 function crop() {
-    if(cropStore.image === null) {
+    if(workStore.image === null) {
         throw new Error("Image cannot be null");
     }
 
@@ -48,7 +50,7 @@ function crop() {
         throw new Error("Context2D is null");
     }
 
-    const imgInfo = cropStore.info;
+    const imgInfo = workStore.imageInfo;
     const scaleFactor = imgInfo.naturalWidth / imgInfo.cw;
 
     let w = cropInfo.areaW, h = cropInfo.areaH;
@@ -59,7 +61,7 @@ function crop() {
     canvas.width = w;
     canvas.height = h;
 
-    ctx.drawImage(cropStore.image, cropInfo.areaX *= scaleFactor, cropInfo.areaY *= scaleFactor, cropInfo.areaW *= scaleFactor, cropInfo.areaH *= scaleFactor, 0, 0, w, h);
+    ctx.drawImage(workStore.image, cropInfo.areaX *= scaleFactor, cropInfo.areaY *= scaleFactor, cropInfo.areaW *= scaleFactor, cropInfo.areaH *= scaleFactor, 0, 0, w, h);
 
     downloadCanvas( canvas, "save" );
 }
@@ -117,8 +119,8 @@ const cropAreaStyle = computed(() => {
 
 const imageStyle = computed(() => {
     return {
-        width: cropStore.info.cw + "px",
-        height: cropStore.info.ch + "px",
+        width: workStore.imageInfo.cw + "px",
+        height: workStore.imageInfo.ch + "px",
     }
 });
 
@@ -183,7 +185,7 @@ function mousedown(e: MouseEvent) {
 }
 
 function mousemove(e: MouseEvent) {
-    const imgInfo = cropStore.info;
+    const imgInfo = workStore.imageInfo;
 
     if (cropInfo.moveStart || cropInfo.resize) {
         cropInfo.currentX = e.clientX;

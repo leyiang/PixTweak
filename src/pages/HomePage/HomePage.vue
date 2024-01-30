@@ -1,10 +1,8 @@
 <template>
     <div class="app-wrap">
-        <header class="app-header">
-            <p>Header Here</p>
-        </header>
+        <Header></Header>
 
-        <main class="work-wrap">
+        <main class="work-wrap" ref="dWorkWrap">
             <div class="working-area">
                 <Crop></Crop>
             </div>
@@ -17,10 +15,26 @@
 import "@/assets/style/pages/HomePageStyle.css";
 import Crop from "@/components/Crop.vue";
 import SampleImage from "@/assets/images/sample.png";
+import HugeSampleImage from "@/assets/images/huge_sample.jpg";
 import { loadImage } from "@/utils";
 import { useCropStore } from "@/stores/CropStore";
+import Header from "./Header.vue";
+import { onMounted, ref } from "vue";
+import { useWorkStore } from "@/stores/WorkStore";
 
 const cropStore = useCropStore();
+const workStore = useWorkStore();
+const dWorkWrap = ref<HTMLElement | null>(null);
+
+onMounted(() => {
+    if( dWorkWrap.value === null ) {
+        throw new Error("Dom Ref Value is Null inside onMounted");
+    }
+
+    const rect = dWorkWrap.value.getBoundingClientRect();
+    workStore.setWorkSize(rect.width, rect.height);
+});
+
 
 function isImage( mimeString: string ) : boolean {
     const allowed = ["image/png", "image/jpeg", "image/gif"];
@@ -50,12 +64,12 @@ document.onpaste = (evt) => {
     const url = URL.createObjectURL(file);
 
     loadImage( url ).then(image => {
-        cropStore.setImage( image );
+        workStore.setImage( image );
     });
 };
 
-loadImage( SampleImage ).then( image => {
-    cropStore.setImage( image );
+loadImage( HugeSampleImage ).then( image => {
+    workStore.setImage( image );
 });
 
 window.addEventListener("keydown", e => {
