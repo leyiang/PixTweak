@@ -53,7 +53,7 @@ function crop() {
     const imgInfo = workStore.imageInfo;
     const scaleFactor = imgInfo.nw / imgInfo.cw;
 
-    let w = cropInfo.areaW, h = cropInfo.areaH;
+    let {w, h} = cropStore.rect;
 
     w *= scaleFactor;
     h *= scaleFactor;
@@ -61,7 +61,8 @@ function crop() {
     canvas.width = w;
     canvas.height = h;
 
-    ctx.drawImage(workStore.image, cropInfo.areaX *= scaleFactor, cropInfo.areaY *= scaleFactor, cropInfo.areaW *= scaleFactor, cropInfo.areaH *= scaleFactor, 0, 0, w, h);
+    ctx.drawImage(workStore.image, cropStore.rect.x * scaleFactor, cropStore.rect.y * scaleFactor,
+    cropStore.rect.w * scaleFactor, cropStore.rect.h * scaleFactor, 0, 0, w, h);
 
     downloadCanvas( canvas, "save" );
 }
@@ -72,26 +73,7 @@ document.addEventListener("keydown", e => {
     }
 });
 
-const cropInfo = reactive({
-    moveStart: false,
-    resize: false,
-
-    resizeL: false,
-    resizeR: false,
-    resizeT: false,
-    resizeB: false,
-
-    areaOldX: 0,
-    areaOldY: 0,
-
-    oldAreaW: 100,
-    oldAreaH: 100,
-    areaW: 100,
-    areaH: 100,
-
-    areaX: 0,
-    areaY: 0,
-
+const mouseInfo = reactive({
     startX: 0,
     startY: 0,
 
@@ -101,19 +83,19 @@ const cropInfo = reactive({
 
 const imgCropperClass = computed(() => {
     return {
-        resizing: cropInfo.resize,
-        "resize-left": cropInfo.resizeL,
-        "resize-right": cropInfo.resizeR,
-        "resize-top": cropInfo.resizeT,
-        "resize-bottom": cropInfo.resizeB,
+        resizing: cropStore.isResizing,
+        "resize-left": cropStore.resizing.left,
+        "resize-right": cropStore.resizing.right,
+        "resize-top": cropStore.resizing.top,
+        "resize-bottom": cropStore.resizing.bottom,
     }
 });
 
 const cropAreaStyle = computed(() => {
     return {
-        width: cropInfo.areaW + "px",
-        height: cropInfo.areaH + "px",
-        transform: `translate(${cropInfo.areaX}px, ${cropInfo.areaY}px)`
+        width: cropStore.rect.w + "px",
+        height: cropStore.rect.h + "px",
+        transform: `translate(${cropStore.rect.x}px, ${cropStore.rect.y}px)`
     }
 });
 
@@ -125,15 +107,16 @@ const imageStyle = computed(() => {
 });
 
 function resetMouse(e: MouseEvent) {
-    cropInfo.moveStart = false;
-    cropInfo.resize = false;
-    cropInfo.resizeR = false;
-    cropInfo.resizeT = false;
-    cropInfo.resizeL = false;
-    cropInfo.resizeB = false;
+    cropStore.isMoving = false;
 
-    cropInfo.oldAreaH = cropInfo.areaH;
-    cropInfo.oldAreaW = cropInfo.areaW;
+    cropStore.isResizing = false;
+    cropStore.resizing.right = false;
+    cropStore.resizing.top = false;
+    cropStore.resizing.bottom = false;
+    cropStore.resizing.left = false;
+
+    cropStore.oldRect.w = cropStore.rect.w;
+    cropStore.oldRect.h = cropStore.rect.h;
 }
 
 window.addEventListener("mouseup", resetMouse);
@@ -141,13 +124,13 @@ window.addEventListener("mouseup", resetMouse);
 function mousedown(e: MouseEvent) {
 
     if (e.target === dCropArea.value) {
-        cropInfo.startX = e.clientX;
-        cropInfo.startY = e.clientY;
+        mouseInfo.startX = e.clientX;
+        mouseInfo.startY = e.clientY;
 
-        cropInfo.moveStart = true;
+        cropStore.isMoving = true;
 
-        cropInfo.areaOldX = cropInfo.areaX;
-        cropInfo.areaOldY = cropInfo.areaY;
+        cropStore.oldRect.x = cropStore.rect.x;
+        cropStore.oldRect.y = cropStore.rect.y;
 
         return;
     }
@@ -155,31 +138,31 @@ function mousedown(e: MouseEvent) {
     const { target } = e;
 
     if (target instanceof HTMLElement && target.classList.contains("crop-handle")) {
-        cropInfo.startX = e.clientX;
-        cropInfo.startY = e.clientY;
+        mouseInfo.startX = e.clientX;
+        mouseInfo.startY = e.clientY;
 
-        cropInfo.resize = true;
+        cropStore.isResizing = true;
 
-        cropInfo.oldAreaH = cropInfo.areaH;
-        cropInfo.oldAreaW = cropInfo.areaW;
+        cropStore.oldRect.w = cropStore.rect.w;
+        cropStore.oldRect.h = cropStore.rect.h;
 
-        cropInfo.areaOldX = cropInfo.areaX;
-        cropInfo.areaOldY = cropInfo.areaY;
+        cropStore.oldRect.x = cropStore.rect.x;
+        cropStore.oldRect.y = cropStore.rect.y;
 
         if (target.classList.contains("handle-left")) {
-            cropInfo.resizeL = true;
+            cropStore.resizing.left = true;
         }
 
         if (target.classList.contains("handle-right")) {
-            cropInfo.resizeR = true;
+            cropStore.resizing.right = true;
         }
 
         if (target.classList.contains("handle-top")) {
-            cropInfo.resizeT = true;
+            cropStore.resizing.top = true;
         }
 
         if (target.classList.contains("handle-bottom")) {
-            cropInfo.resizeB = true;
+            cropStore.resizing.bottom = true;
         }
     }
 }
@@ -187,62 +170,63 @@ function mousedown(e: MouseEvent) {
 function mousemove(e: MouseEvent) {
     const imgInfo = workStore.imageInfo;
 
-    if (cropInfo.moveStart || cropInfo.resize) {
-        cropInfo.currentX = e.clientX;
-        cropInfo.currentY = e.clientY;
+    if (cropStore.isMoving || cropStore.isResizing) {
+        mouseInfo.currentX = e.clientX;
+        mouseInfo.currentY = e.clientY;
 
-        const dx = cropInfo.currentX - cropInfo.startX;
-        const dy = cropInfo.currentY - cropInfo.startY;
+        const dx = mouseInfo.currentX - mouseInfo.startX;
+        const dy = mouseInfo.currentY - mouseInfo.startY;
 
-        if (cropInfo.moveStart) {
-            cropInfo.areaX = cropInfo.areaOldX + dx;
-            if (cropInfo.areaX < 0) cropInfo.areaX = 0;
-            if (cropInfo.areaX + cropInfo.areaW > imgInfo.cw) {
-                cropInfo.areaX = imgInfo.cw - cropInfo.areaW;
+        if (cropStore.isMoving) {
+            cropStore.rect.x = cropStore.oldRect.x + dx;
+
+            if (cropStore.rect.x < 0) cropStore.rect.x = 0;
+            if (cropStore.rect.x + cropStore.rect.w > imgInfo.cw) {
+                cropStore.rect.x = imgInfo.cw - cropStore.rect.w;
             }
 
-            cropInfo.areaY = cropInfo.areaOldY + dy;
+            cropStore.rect.y = cropStore.oldRect.y + dy;
 
-            if (cropInfo.areaY < 0) cropInfo.areaY = 0;
-            if (cropInfo.areaY + cropInfo.areaH > imgInfo.ch) {
-                cropInfo.areaY = imgInfo.ch - cropInfo.areaH;
+            if (cropStore.rect.y < 0) cropStore.rect.y = 0;
+            if (cropStore.rect.y + cropStore.rect.h > imgInfo.ch) {
+                cropStore.rect.y = imgInfo.ch - cropStore.rect.h;
             }
         }
 
-        if (cropInfo.resize) {
-            if (cropInfo.resizeL) {
-                cropInfo.areaX = cropInfo.areaOldX + dx;
-                cropInfo.areaW = cropInfo.oldAreaW - dx;
+        if (cropStore.isResizing) {
+            if (cropStore.resizing.left) {
+                cropStore.rect.x = cropStore.oldRect.x + dx;
+                cropStore.rect.w = cropStore.oldRect.w - dx;
 
-                if (cropInfo.areaX < 0) {
-                    let offset = cropInfo.areaX;
-                    cropInfo.areaX = 0;
-                    cropInfo.areaW += offset;
+                if (cropStore.rect.x < 0) {
+                    let offset = cropStore.rect.x;
+                    cropStore.rect.x = 0;
+                    cropStore.rect.w += offset;
                 }
             }
 
-            if (cropInfo.resizeR) {
-                cropInfo.areaW = cropInfo.oldAreaW + dx;
-                if (cropInfo.areaW + cropInfo.areaX > imgInfo.cw) {
-                    cropInfo.areaW = imgInfo.cw - cropInfo.areaX;
+            if (cropStore.resizing.right) {
+                cropStore.rect.w = cropStore.oldRect.w + dx;
+                if (cropStore.rect.w + cropStore.rect.x > imgInfo.cw) {
+                    cropStore.rect.w = imgInfo.cw - cropStore.rect.x;
                 }
             }
 
-            if (cropInfo.resizeB) {
-                cropInfo.areaH = cropInfo.oldAreaH + dy;
-                if (cropInfo.areaH + cropInfo.areaY > imgInfo.ch) {
-                    cropInfo.areaH = imgInfo.ch - cropInfo.areaY;
+            if (cropStore.resizing.bottom) {
+                cropStore.rect.h = cropStore.oldRect.h + dy;
+                if (cropStore.rect.h + cropStore.rect.y > imgInfo.ch) {
+                    cropStore.rect.h = imgInfo.ch - cropStore.rect.y;
                 }
             }
 
-            if (cropInfo.resizeT) {
-                cropInfo.areaY = cropInfo.areaOldY + dy;
-                cropInfo.areaH = cropInfo.oldAreaH - dy;
+            if (cropStore.resizing.top) {
+                cropStore.rect.y = cropStore.oldRect.y + dy;
+                cropStore.rect.h = cropStore.oldRect.h - dy;
 
-                if (cropInfo.areaY < 0) {
-                    let offset = cropInfo.areaY;
-                    cropInfo.areaY = 0;
-                    cropInfo.areaH += offset;
+                if (cropStore.rect.y < 0) {
+                    let offset = cropStore.rect.y;
+                    cropStore.rect.y = 0;
+                    cropStore.rect.h += offset;
                 }
             }
         }
