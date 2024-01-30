@@ -23,31 +23,25 @@ import { useCropStore } from "@/stores/CropStore";
 
 const cropStore = useCropStore();
 
-// document.onpaste = (evt) => {
-//     const dT = evt.clipboardData || window.clipboardData;
-//     const file = dT.files[0];
+document.onpaste = (evt) => {
+    const data = evt.clipboardData;
 
-//     const url = URL.createObjectURL(file);
-//     console.log(url);
-//     const image = new Image();
-//     image.addEventListener("load", () => {
-//         getImage( image );
-//     });
-//     image.src = url;
-//     console.log(file instanceof Blob);
-// };
+    if( data === null ) {
+        console.log("onpaste event triggerd, but data is empty");
+        return;
+    }
 
-/** For Test */
+    const file = data.files[0];
+    const url = URL.createObjectURL(file);
+
+    loadImage( url ).then(image => {
+        cropStore.setImage( image );
+    });
+};
 
 loadImage( SampleImage ).then( image => {
     cropStore.setImage( image );
 });
-
-
-// let factor = 1;
-
-// function scale() {
-// }
 
 window.addEventListener("keydown", e => {
     if (e.key === "-" && e.ctrlKey) {
