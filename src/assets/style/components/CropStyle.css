@@ -1,34 +1,28 @@
-body {
-    margin: 0;
-}
-
 .image-cropper {
     position: relative;
-    margin-top: 200px;;
-    margin-left: 200px;
 }
 
 .image-cropper * {
     user-select: none;
 }
 
-.image-cropper.resizing  {
+.image-cropper.resizing {
     cursor: none;
-} 
+}
 
-.image-cropper.resizing  .crop-handle  {
+.image-cropper.resizing .crop-handle {
     opacity: 0;
     cursor: none;
 }
 
-.image-cropper.resizing  > *  {
+.image-cropper.resizing>* {
     cursor: none;
 }
 
 .image-wrap {
     position: relative;
     display: inline-block;
-    
+
     color: #EEE;
     background-image: conic-gradient(currentColor 0 25%, transparent 0 50%, currentColor 0 75%, transparent 0);
     background-size: 16px 16px;
@@ -62,8 +56,8 @@ body {
     --offset: -5px;
 
     position: absolute;
-    width: var(--size); 
-    height: var(--size); 
+    width: var(--size);
+    height: var(--size);
     background: #FFF;
     border: 1px solid #666;
     box-sizing: border-box;
