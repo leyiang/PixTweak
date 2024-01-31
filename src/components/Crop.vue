@@ -1,12 +1,10 @@
 <template>
-    <button id="crop-btn" @click="crop">Crop</button>
-
     <div class="image-cropper" :class="imgCropperClass" @mouseup="resetMouse" @mousemove="mousemove" @mousedown="mousedown">
         <div class="image-wrap">
             <canvas ref="dCanvas"></canvas>
             <div
                 class="image-mask"
-                v-show="! workStore.dragging"
+                v-show="! areaDraggingStore.dragging"
             ></div>
         </div>
 
@@ -14,7 +12,7 @@
             class="crop-area"
             ref="dCropArea"
             :style="cropAreaStyle"
-            v-show="! workStore.dragging"
+            v-show="! areaDraggingStore.dragging"
         >
             <div class="crop-handle handle-top handle-left"></div>
             <div class="crop-handle handle-top handle-hmid"></div>
@@ -31,6 +29,7 @@
 <script setup lang="ts">
 import "@/assets/style/components/CropStyle.css"
 import { useCropStore } from "@/stores/CropStore";
+import { useWorkAreaDraggingStore } from "@/stores/WorkAreaDraggingStore";
 import { useWorkStore } from "@/stores/WorkStore";
 import type { SupportImageSource } from "@/types/WorkStoreType";
 import { downloadCanvas } from "@/utils";
@@ -43,10 +42,14 @@ const dCropArea = ref(null);
 const dCanvas = ref<HTMLCanvasElement | null>(null);
 
 const { scale, editingImage } = storeToRefs(workStore);
-
+const areaDraggingStore = useWorkAreaDraggingStore();
 
 watch(editingImage,() => {
-    updateEditingImage( editingImage.value )
+    const repaintProcessed = updateEditingImage( editingImage.value )
+
+    if( repaintProcessed ) {
+        cropStore.updateCropInfo();
+    }
 });
 
 // Keep track of scale value
@@ -64,12 +67,19 @@ watch(scale,() => {
     updateEditingImage( editingImage.value )
 });
 
-function updateEditingImage( imageSource: SupportImageSource | null ) {
+watch(scale, () => {
+    cropStore.applyScale( scale.value );
+});
+
+/**
+ * Return value indicates is repaint processed 
+ */
+function updateEditingImage( imageSource: SupportImageSource | null ) : boolean {
     currentScale = scale.value;
     
     if( imageSource === null ) {
         // Image is Null Logic
-        return;
+        return false;
     }
 
     const canvas = dCanvas.value;
@@ -93,59 +103,12 @@ function updateEditingImage( imageSource: SupportImageSource | null ) {
 
     ctx.drawImage( imageSource, 0, 0, cw, ch);
 
-    // Update Crop Info
-    cropStore.updateCropInfo();
-}
-
-/**
- * args as same as context.drawImage 
- * for more info, check its documentation
- */
-function cropImage( imageToCrop: CanvasImageSource, sx: number, sy: number, sw: number, sh: number, dw:number, dh:number ) {
-    const canvas = document.createElement("canvas");
-
-    // for getContext returning null, it can happen if you have already requested a different type of context.
-    const ctx = canvas.getContext("2d");
-
-    if( ctx === null ) {
-        throw new Error("Context2D is null");
-    }
-
-    canvas.width = dw;
-    canvas.height = dh;
-
-    ctx.drawImage(imageToCrop, sx, sy, sw, sh, 0, 0, dw, dh);
-
-    return canvas;
-}
-
-function crop() {
-    if(workStore.editingImage === null) {
-        throw new Error("Image cannot be null");
-    }
-
-    const scaleFactor = 1 / workStore.scale;
-
-    // Destination Width and Height
-    let {w, h} = cropStore.rect;
-
-    w *= scaleFactor;
-    h *= scaleFactor;
-
-    const resImage = cropImage(
-        workStore.editingImage,
-        cropStore.rect.x * scaleFactor,
-        cropStore.rect.y * scaleFactor,
-        w, h, w, h
-    );
-
-    workStore.setEditingImage( resImage );
-    // downloadCanvas( resImage, "save" );
+    return true;
 }
 
 document.addEventListener("keydown", e => {
     if( e.key === "Enter" ) {
-        crop(); 
+        cropStore.crop(); 
     }
 });
 
@@ -169,9 +132,9 @@ const imgCropperClass = computed(() => {
 
 const cropAreaStyle = computed(() => {
     return {
-        width: cropStore.rect.w + "px",
-        height: cropStore.rect.h + "px",
-        transform: `translate(${cropStore.rect.x}px, ${cropStore.rect.y}px)`
+        width: cropStore.scaledRect.w + "px",
+        height: cropStore.scaledRect.h + "px",
+        transform: `translate(${cropStore.scaledRect.x}px, ${cropStore.scaledRect.y}px)`
     }
 });
 
@@ -243,8 +206,8 @@ function mousemove(e: MouseEvent) {
         mouseInfo.currentX = e.clientX;
         mouseInfo.currentY = e.clientY;
 
-        const dx = mouseInfo.currentX - mouseInfo.startX;
-        const dy = mouseInfo.currentY - mouseInfo.startY;
+        const dx = (mouseInfo.currentX - mouseInfo.startX) / workStore.scale;
+        const dy = (mouseInfo.currentY - mouseInfo.startY) / workStore.scale;
 
         if (cropStore.isMoving) {
             cropStore.rect.x = cropStore.oldRect.x + dx;

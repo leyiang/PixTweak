@@ -1,6 +1,7 @@
 // stores/counter.js
 import type { ImgInfo, SupportImageSource, WorkSize } from '@/types/WorkStoreType';
 import { defineStore } from 'pinia'
+import { useWorkAreaDraggingStore } from './WorkAreaDraggingStore';
 
 export const useWorkStore = defineStore('work-store', {
   state: () => {
@@ -17,9 +18,6 @@ export const useWorkStore = defineStore('work-store', {
         width: 0,
         height: 0,
       } as WorkSize,
-
-      // User able to drag zoomed image
-      dragging: false,
     }
   },
 
@@ -68,6 +66,14 @@ export const useWorkStore = defineStore('work-store', {
     },
 
     setEditingImage(image: SupportImageSource) {
+      const areaDraggingStore = useWorkAreaDraggingStore();
+
+      this.editingImage = image;
+      this.setDefaultScale();
+      areaDraggingStore.resetMoveOffset();
+    },
+
+    setDefaultScale() {
       function getDefaultScale(imgInfo: ImgInfo, size: WorkSize) : number {
         let scale = 1;
 
@@ -78,7 +84,6 @@ export const useWorkStore = defineStore('work-store', {
         return scale;
       }
 
-      this.editingImage = image;
       this.scale = getDefaultScale( this.imageInfo, this.size );
     },
 

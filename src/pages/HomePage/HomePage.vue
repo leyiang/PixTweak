@@ -5,10 +5,11 @@
         <main
             ref="dWorkWrap"
             class="work-wrap"
-            :class="{dragging: workStore.dragging}"
+            :class="{dragging: areaDraggingStore.dragging}"
         >
             <div
                 class="working-area"
+                :style="workAreaStyle"
             >
                 <Crop></Crop>
             </div>
@@ -29,10 +30,18 @@ import { computed, onMounted, ref } from "vue";
 import { useWorkStore } from "@/stores/WorkStore";
 import { KeyboardShortcut } from "@/core/KeyboardShortcut";
 import { KeyboardState, PRESSED } from "@/core/KeyboardState";
+import { useWorkAreaDraggingStore } from "@/stores/WorkAreaDraggingStore";
 
 const cropStore = useCropStore();
 const workStore = useWorkStore();
+const areaDraggingStore = useWorkAreaDraggingStore();
 const dWorkWrap = ref<HTMLElement | null>(null);
+
+const workAreaStyle = computed(() => {
+    return {
+        transform: `translate(${ areaDraggingStore.moveOffset.x }px, ${ areaDraggingStore.moveOffset.y }px)`
+    }
+});
 
 onMounted(() => {
     if( dWorkWrap.value === null ) {
@@ -85,9 +94,9 @@ const keyState = new KeyboardState();
 
 keyState.addMapping(" ", (state: number) => {
     if( state === PRESSED ) {
-        workStore.dragging = true;
+        areaDraggingStore.dragging = true;
     } else {
-        workStore.dragging = false;
+        areaDraggingStore.dragging = false;
     }
 });
 
@@ -97,8 +106,12 @@ shortcut.add("ctrl", "-", () => {
     workStore.zoomOut();
 });
 
+shortcut.add("ctrl", "=", () => {
+    workStore.zoomIn();
+});
+
 shortcut.add("ctrl", "0", () => {
-    console.log("Back!!");
+    workStore.setDefaultScale();
 });
 
 shortcut.add("shift", "+", () => {
@@ -127,4 +140,44 @@ window.addEventListener("wheel", e => {
     }
 
 }, { passive: false });
+
+
+const start = {
+    x: 0, y: 0
+}
+
+const cur = {
+    x: 0, y: 0
+}
+
+let startDragging = false;
+
+window.addEventListener("mousedown", e => {
+    if( areaDraggingStore.dragging ) {
+        start.x = e.clientX;
+        start.y = e.clientY;
+
+        startDragging = true;
+    }
+});
+
+window.addEventListener("mousemove", e => {
+    if( areaDraggingStore.dragging && startDragging ) {
+        cur.x = e.clientX;
+        cur.y = e.clientY;
+
+        const dx = cur.x - start.x;
+        const dy = cur.y - start.y;
+
+        areaDraggingStore.moveOffset.x = areaDraggingStore.oldOffset.x + dx;
+        areaDraggingStore.moveOffset.y = areaDraggingStore.oldOffset.y + dy;
+    }
+});
+
+window.addEventListener("mouseup", e => {
+    startDragging = false;
+
+    areaDraggingStore.oldOffset.x = areaDraggingStore.moveOffset.x;
+    areaDraggingStore.oldOffset.y = areaDraggingStore.moveOffset.y;
+});
 </script>

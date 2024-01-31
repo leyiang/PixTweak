@@ -11,6 +11,7 @@
     <label for="crop-w">y</label>
     <input type="number" v-model="cropStore.rect.y">
 
+    <button id="crop-btn" @click="cropStore.crop()">Crop</button>
     <button @click="resetCrop">Reset</button>
 </template>
 

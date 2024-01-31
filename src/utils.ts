@@ -36,3 +36,25 @@ export function copyCanvasToClipboard( canvas: HTMLCanvasElement ) {
         navigator.clipboard.write([imageData]);
     });
 }
+
+/**
+ * args as same as context.drawImage 
+ * for more info, check its documentation
+ */
+export function cropImage( imageToCrop: CanvasImageSource, sx: number, sy: number, sw: number, sh: number, dw:number, dh:number ) {
+    const canvas = document.createElement("canvas");
+
+    // for getContext returning null, it can happen if you have already requested a different type of context.
+    const ctx = canvas.getContext("2d");
+
+    if( ctx === null ) {
+        throw new Error("Context2D is null");
+    }
+
+    canvas.width = dw;
+    canvas.height = dh;
+
+    ctx.drawImage(imageToCrop, sx, sy, sw, sh, 0, 0, dw, dh);
+
+    return canvas;
+}

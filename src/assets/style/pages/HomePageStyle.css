@@ -19,6 +19,7 @@ html, #app, .app-wrap {
     background: #EEE;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
 }
 
 .work-wrap.dragging {
