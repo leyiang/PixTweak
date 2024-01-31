@@ -110,4 +110,21 @@ shortcut.add("shift", "_", () => {
 });
 
 shortcut.startListen();
+
+window.addEventListener("wheel", e => {
+    if( e.ctrlKey ) {
+        e.preventDefault();
+
+        // negative means zoom in
+        // positive means zoom out
+        const dir = Math.sign( e.deltaY );
+
+        if( dir < 0 ) {
+            workStore.upscale();
+        } else {
+            workStore.downscale();
+        }
+    }
+
+}, { passive: false });
 </script>
