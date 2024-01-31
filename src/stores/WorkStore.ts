@@ -16,7 +16,10 @@ export const useWorkStore = defineStore('work-store', {
       size: {
         width: 0,
         height: 0,
-      } as WorkSize
+      } as WorkSize,
+
+      // User able to drag zoomed image
+      dragging: false,
     }
   },
 

@@ -2,8 +2,14 @@
     <div class="app-wrap">
         <Header></Header>
 
-        <main class="work-wrap" ref="dWorkWrap">
-            <div class="working-area">
+        <main
+            ref="dWorkWrap"
+            class="work-wrap"
+            :class="{dragging: workStore.dragging}"
+        >
+            <div
+                class="working-area"
+            >
                 <Crop></Crop>
             </div>
 
@@ -19,9 +25,10 @@ import HugeSampleImage from "@/assets/images/huge_sample.jpg";
 import { loadImage } from "@/utils";
 import { useCropStore } from "@/stores/CropStore";
 import Header from "./Header.vue";
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useWorkStore } from "@/stores/WorkStore";
 import { KeyboardShortcut } from "@/core/KeyboardShortcut";
+import { KeyboardState, PRESSED } from "@/core/KeyboardState";
 
 const cropStore = useCropStore();
 const workStore = useWorkStore();
@@ -74,6 +81,17 @@ loadImage( HugeSampleImage ).then( image => {
 });
 
 const shortcut = new KeyboardShortcut();
+const keyState = new KeyboardState();
+
+keyState.addMapping(" ", (state: number) => {
+    if( state === PRESSED ) {
+        workStore.dragging = true;
+    } else {
+        workStore.dragging = false;
+    }
+});
+
+keyState.listenTo();
 
 shortcut.add("ctrl", "-", () => {
     workStore.downscale();

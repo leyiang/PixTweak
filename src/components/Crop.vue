@@ -4,11 +4,18 @@
     <div class="image-cropper" :class="imgCropperClass" @mouseup="resetMouse" @mousemove="mousemove" @mousedown="mousedown">
         <div class="image-wrap">
             <canvas ref="dCanvas"></canvas>
-            <div class="image-mask"></div>
+            <div
+                class="image-mask"
+                v-show="! workStore.dragging"
+            ></div>
         </div>
 
-        <div class="crop-area" ref="dCropArea" :style="cropAreaStyle">
-
+        <div
+            class="crop-area"
+            ref="dCropArea"
+            :style="cropAreaStyle"
+            v-show="! workStore.dragging"
+        >
             <div class="crop-handle handle-top handle-left"></div>
             <div class="crop-handle handle-top handle-hmid"></div>
             <div class="crop-handle handle-top handle-right"></div>

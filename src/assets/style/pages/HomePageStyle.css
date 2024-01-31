@@ -3,9 +3,7 @@ body {
 }
 
 body,
-html,
-#app,
-.app-wrap {
+html, #app, .app-wrap {
     height: 100%;
     overflow: hidden;
 }
@@ -21,4 +19,8 @@ html,
     background: #EEE;
     align-items: center;
     justify-content: center;
+}
+
+.work-wrap.dragging {
+    cursor: move;
 }
