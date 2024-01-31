@@ -1,5 +1,5 @@
 <template>
-    <div class="image-cropper" :class="imgCropperClass" @mouseup="resetMouse" @mousemove="mousemove" @mousedown="mousedown">
+    <div class="image-cropper" :class="imgCropperClass">
         <div class="image-wrap">
             <canvas ref="dCanvas"></canvas>
             <div
@@ -152,6 +152,8 @@ function resetMouse(e: MouseEvent) {
 }
 
 window.addEventListener("mouseup", resetMouse);
+window.addEventListener("mousemove", mousemove);
+window.addEventListener("mousedown", mousedown);
 
 function mousedown(e: MouseEvent) {
 
