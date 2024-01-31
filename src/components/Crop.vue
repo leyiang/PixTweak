@@ -25,6 +25,7 @@
 import "@/assets/style/components/CropStyle.css"
 import { useCropStore } from "@/stores/CropStore";
 import { useWorkStore } from "@/stores/WorkStore";
+import type { SupportImageSource } from "@/types/WorkStoreType";
 import { downloadCanvas } from "@/utils";
 import { storeToRefs } from "pinia";
 import { computed, reactive, ref, watch } from "vue";
@@ -34,11 +35,18 @@ const workStore = useWorkStore();
 const dCropArea = ref(null);
 const dCanvas = ref<HTMLCanvasElement | null>(null);
 
-const { editingImage } = storeToRefs(workStore);
+const { scale, editingImage } = storeToRefs(workStore);
 
 watch(editingImage,() => {
-    const imageSource = editingImage.value;
+    updateEditingImage( editingImage.value )
+});
 
+// watch(scale,() => {
+//     updateEditingImage( editingImage.value )
+// });
+
+function updateEditingImage( imageSource: SupportImageSource | null ) {
+    
     if( imageSource === null ) {
         // Image is Null Logic
         return;
@@ -56,13 +64,18 @@ watch(editingImage,() => {
         throw new Error("Someone reached the canvas, and getContext('webgl') before. Check it.")
     }
 
+    console.log("REpaint!", imageSource );
+
     const { cw, ch } = workStore.imageInfo;
 
     canvas.width = cw;
     canvas.height = ch;
 
     ctx.drawImage( imageSource, 0, 0, cw, ch);
-});
+
+    // Update Crop Info
+    cropStore.updateCropInfo();
+}
 
 /**
  * args as same as context.drawImage 

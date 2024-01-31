@@ -1,9 +1,11 @@
 // stores/counter.js
 import { defineStore } from 'pinia'
+
+const defaultCropWidth = 100;
+const defaultCropHeight = 100;
+
 export const useCropStore = defineStore('crop-store', {
   state: () => {
-    const defaultCropWidth = 100;
-    const defaultCropHeight = 100;
 
     return {
       rect: {
@@ -34,5 +36,13 @@ export const useCropStore = defineStore('crop-store', {
 
 
   actions: {
+    updateCropInfo() {
+      this.rect = {
+        x: 0,
+        y: 0,
+        w: defaultCropWidth,
+        h: defaultCropHeight,
+      };
+    }
   },
 })
