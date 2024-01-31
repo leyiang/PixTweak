@@ -1,5 +1,5 @@
 // stores/counter.js
-import type { ImgInfo, WorkSize } from '@/types/WorkStoreType';
+import type { ImgInfo, SupportImageSource, WorkSize } from '@/types/WorkStoreType';
 import { defineStore } from 'pinia'
 
 export const useWorkStore = defineStore('work-store', {
@@ -8,10 +8,10 @@ export const useWorkStore = defineStore('work-store', {
       scale: 1,
 
       // Uploaded Image without Change
-      originImage: null as HTMLImageElement | null,
+      originImage: null as SupportImageSource | null,
 
       // Current Editing Image
-      editingImage: null as HTMLImageElement | null,
+      editingImage: null as SupportImageSource | null,
 
       size: {
         width: 0,
@@ -28,8 +28,15 @@ export const useWorkStore = defineStore('work-store', {
         throw new Error("img is null");
       }
 
-      const nw = image.naturalWidth;
-      const nh = image.naturalHeight;
+      let nw = 0, nh = 0;
+
+      if( image instanceof HTMLImageElement ) {
+        nw = image.naturalWidth;
+        nh = image.naturalHeight;
+      } else if ( image instanceof HTMLCanvasElement ) {
+        nw = image.width;
+        nh = image.height;
+      }
 
       return {
         nw: nw,
@@ -49,12 +56,15 @@ export const useWorkStore = defineStore('work-store', {
       this.size.height = height;
     },
 
-    setImage(image: HTMLImageElement) {
+    setImage(image: SupportImageSource) {
+      setTimeout(() => {
+        this.setEditingImage( image );
+      }, 0);
+
       this.originImage = image;
-      this.setEditingImage( image );
     },
 
-    setEditingImage(image: HTMLImageElement) {
+    setEditingImage(image: SupportImageSource) {
       function getDefaultScale(imgInfo: ImgInfo, size: WorkSize) : number {
         let scale = 1;
 

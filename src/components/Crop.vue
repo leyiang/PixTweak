@@ -3,11 +3,7 @@
 
     <div class="image-cropper" :class="imgCropperClass" @mouseup="resetMouse" @mousemove="mousemove" @mousedown="mousedown">
         <div class="image-wrap">
-            <img
-                v-if="workStore.editingImage"
-                :src="workStore.editingImage.src"
-                :style="imageStyle"
-            >
+            <canvas ref="dCanvas"></canvas>
             <div class="image-mask"></div>
         </div>
 
@@ -30,11 +26,43 @@ import "@/assets/style/components/CropStyle.css"
 import { useCropStore } from "@/stores/CropStore";
 import { useWorkStore } from "@/stores/WorkStore";
 import { downloadCanvas } from "@/utils";
-import { computed, reactive, ref } from "vue";
+import { storeToRefs } from "pinia";
+import { computed, reactive, ref, watch } from "vue";
 
 const cropStore = useCropStore();
 const workStore = useWorkStore();
 const dCropArea = ref(null);
+const dCanvas = ref<HTMLCanvasElement | null>(null);
+
+const { editingImage } = storeToRefs(workStore);
+
+watch(editingImage,() => {
+    const imageSource = editingImage.value;
+
+    if( imageSource === null ) {
+        // Image is Null Logic
+        return;
+    }
+
+    const canvas = dCanvas.value;
+
+    if( canvas === null ) {
+        throw new Error("app is setting image, but canvas element cannot be retrived")
+    }
+
+    const ctx = canvas.getContext("2d");
+
+    if( ctx === null ) {
+        throw new Error("Someone reached the canvas, and getContext('webgl') before. Check it.")
+    }
+
+    const { cw, ch } = workStore.imageInfo;
+
+    canvas.width = cw;
+    canvas.height = ch;
+
+    ctx.drawImage( imageSource, 0, 0, cw, ch);
+});
 
 /**
  * args as same as context.drawImage 
@@ -78,7 +106,7 @@ function crop() {
         w, h, w, h
     );
 
-    // workStore.setEditingImage( resImage );
+    workStore.setEditingImage( resImage );
     // downloadCanvas( resImage, "save" );
 }
 
@@ -111,13 +139,6 @@ const cropAreaStyle = computed(() => {
         width: cropStore.rect.w + "px",
         height: cropStore.rect.h + "px",
         transform: `translate(${cropStore.rect.x}px, ${cropStore.rect.y}px)`
-    }
-});
-
-const imageStyle = computed(() => {
-    return {
-        width: workStore.imageInfo.cw + "px",
-        height: workStore.imageInfo.ch + "px",
     }
 });
 

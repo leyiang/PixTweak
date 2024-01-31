@@ -14,3 +14,5 @@ export interface WorkSize {
     width: number,
     height: number,
 }
+
+export type SupportImageSource = HTMLImageElement | HTMLCanvasElement;
