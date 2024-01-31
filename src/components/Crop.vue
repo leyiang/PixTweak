@@ -1,7 +1,8 @@
 <template>
     <div class="image-cropper" :class="imgCropperClass">
         <div class="image-wrap">
-            <canvas ref="dCanvas"></canvas>
+            <EditingImage></EditingImage>
+
             <div
                 class="image-mask"
                 v-show="! areaDraggingStore.dragging"
@@ -28,6 +29,7 @@
 
 <script setup lang="ts">
 import "@/assets/style/components/CropStyle.css"
+import EditingImage from "@/pages/HomePage/EditingImage.vue";
 import { useCropStore } from "@/stores/CropStore";
 import { useWorkAreaDraggingStore } from "@/stores/WorkAreaDraggingStore";
 import { useWorkStore } from "@/stores/WorkStore";
@@ -44,67 +46,14 @@ const dCanvas = ref<HTMLCanvasElement | null>(null);
 const { scale, editingImage } = storeToRefs(workStore);
 const areaDraggingStore = useWorkAreaDraggingStore();
 
-watch(editingImage,() => {
-    const repaintProcessed = updateEditingImage( editingImage.value )
 
-    if( repaintProcessed ) {
-        cropStore.updateCropInfo();
-    }
-});
-
-// Keep track of scale value
-// Remove the meaning less repaint on scale init
-let currentScale = -1;
-
-watch(scale,() => {
-    /*
-     * No need to repaint
-     */
-    if( scale.value === currentScale ) {
-        return;
-    }
-
-    updateEditingImage( editingImage.value )
+watch(editingImage, () => {
+    cropStore.updateCropInfo();
 });
 
 watch(scale, () => {
     cropStore.applyScale( scale.value );
 });
-
-/**
- * Return value indicates is repaint processed 
- */
-function updateEditingImage( imageSource: SupportImageSource | null ) : boolean {
-    currentScale = scale.value;
-    
-    if( imageSource === null ) {
-        // Image is Null Logic
-        return false;
-    }
-
-    const canvas = dCanvas.value;
-
-    if( canvas === null ) {
-        throw new Error("app is setting image, but canvas element cannot be retrived")
-    }
-
-    const ctx = canvas.getContext("2d");
-
-    if( ctx === null ) {
-        throw new Error("Someone reached the canvas, and getContext('webgl') before. Check it.")
-    }
-
-    console.log("REpaint!", imageSource );
-
-    const { cw, ch } = workStore.imageInfo;
-
-    canvas.width = cw;
-    canvas.height = ch;
-
-    ctx.drawImage( imageSource, 0, 0, cw, ch);
-
-    return true;
-}
 
 document.addEventListener("keydown", e => {
     if( e.key === "Enter" ) {
@@ -202,9 +151,9 @@ function mousedown(e: MouseEvent) {
 }
 
 function mousemove(e: MouseEvent) {
-    const imgInfo = workStore.imageInfo;
-
     if (cropStore.isMoving || cropStore.isResizing) {
+        const imgInfo = workStore.imageInfo;
+
         mouseInfo.currentX = e.clientX;
         mouseInfo.currentY = e.clientY;
 
