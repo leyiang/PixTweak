@@ -94,19 +94,19 @@ keyState.addMapping(" ", (state: number) => {
 keyState.listenTo();
 
 shortcut.add("ctrl", "-", () => {
-    workStore.downscale();
+    workStore.zoomOut();
 });
 
-shortcut.add("ctrl", "=", () => {
-    workStore.upscale();
+shortcut.add("ctrl", "0", () => {
+    console.log("Back!!");
 });
 
 shortcut.add("shift", "+", () => {
-    workStore.upscale();
+    workStore.zoomIn();
 });
 
 shortcut.add("shift", "_", () => {
-    workStore.downscale();
+    workStore.zoomOut();
 });
 
 shortcut.startListen();
@@ -120,9 +120,9 @@ window.addEventListener("wheel", e => {
         const dir = Math.sign( e.deltaY );
 
         if( dir < 0 ) {
-            workStore.upscale();
+            workStore.zoomIn();
         } else {
-            workStore.downscale();
+            workStore.zoomOut();
         }
     }
 
