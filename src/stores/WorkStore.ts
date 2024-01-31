@@ -6,7 +6,12 @@ export const useWorkStore = defineStore('work-store', {
   state: () => {
     return {
       scale: 1,
-      image: null as HTMLImageElement | null,
+
+      // Uploaded Image without Change
+      originImage: null as HTMLImageElement | null,
+
+      // Current Editing Image
+      editingImage: null as HTMLImageElement | null,
 
       size: {
         width: 0,
@@ -17,7 +22,7 @@ export const useWorkStore = defineStore('work-store', {
 
   getters: {
     imageInfo(state) : ImgInfo {
-      const { image } = state;
+      const image = state.editingImage;
 
       if( image === null ) {
         throw new Error("img is null");
@@ -45,6 +50,11 @@ export const useWorkStore = defineStore('work-store', {
     },
 
     setImage(image: HTMLImageElement) {
+      this.originImage = image;
+      this.setEditingImage( image );
+    },
+
+    setEditingImage(image: HTMLImageElement) {
       function getDefaultScale(imgInfo: ImgInfo, size: WorkSize) : number {
         let scale = 1;
 
@@ -55,7 +65,7 @@ export const useWorkStore = defineStore('work-store', {
         return scale;
       }
 
-      this.image = image;
+      this.editingImage = image;
       this.scale = getDefaultScale( this.imageInfo, this.size );
     },
 

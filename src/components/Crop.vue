@@ -4,8 +4,8 @@
     <div class="image-cropper" :class="imgCropperClass" @mouseup="resetMouse" @mousemove="mousemove" @mousedown="mousedown">
         <div class="image-wrap">
             <img
-                v-if="workStore.image"
-                :src="workStore.image.src"
+                v-if="workStore.editingImage"
+                :src="workStore.editingImage.src"
                 :style="imageStyle"
             >
             <div class="image-mask"></div>
@@ -37,7 +37,7 @@ const workStore = useWorkStore();
 const dCropArea = ref(null);
 
 function crop() {
-    if(workStore.image === null) {
+    if(workStore.editingImage === null) {
         throw new Error("Image cannot be null");
     }
 
@@ -61,7 +61,7 @@ function crop() {
     canvas.width = w;
     canvas.height = h;
 
-    ctx.drawImage(workStore.image, cropStore.rect.x * scaleFactor, cropStore.rect.y * scaleFactor,
+    ctx.drawImage(workStore.editingImage, cropStore.rect.x * scaleFactor, cropStore.rect.y * scaleFactor,
     cropStore.rect.w * scaleFactor, cropStore.rect.h * scaleFactor, 0, 0, w, h);
 
     downloadCanvas( canvas, "save" );
