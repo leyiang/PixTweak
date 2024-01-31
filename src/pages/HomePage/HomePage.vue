@@ -21,6 +21,7 @@ import { useCropStore } from "@/stores/CropStore";
 import Header from "./Header.vue";
 import { onMounted, ref } from "vue";
 import { useWorkStore } from "@/stores/WorkStore";
+import { KeyboardShortcut } from "@/core/KeyboardShortcut";
 
 const cropStore = useCropStore();
 const workStore = useWorkStore();
@@ -72,30 +73,23 @@ loadImage( HugeSampleImage ).then( image => {
     workStore.setImage( image );
 });
 
-window.addEventListener("keydown", e => {
-    // Ctrl + -
-    if (e.key === "-" && e.ctrlKey) {
-        e.preventDefault();
-        workStore.downscale();
-    }
+const shortcut = new KeyboardShortcut();
 
-    // Ctrl + =
-    if (e.key === "=" && e.ctrlKey) {
-        e.preventDefault();
-        workStore.upscale();
-    }
-
-    // Shift + =
-    if( e.key === "+" && e.shiftKey ) {
-        e.preventDefault();
-        workStore.upscale();
-    }
-
-    // Shift + -
-    if( e.key === "_" && e.shiftKey ) {
-        e.preventDefault();
-        workStore.downscale();
-    }
-    
+shortcut.add("ctrl", "-", () => {
+    workStore.downscale();
 });
+
+shortcut.add("ctrl", "=", () => {
+    workStore.upscale();
+});
+
+shortcut.add("shift", "+", () => {
+    workStore.upscale();
+});
+
+shortcut.add("shift", "_", () => {
+    workStore.downscale();
+});
+
+shortcut.startListen();
 </script>
