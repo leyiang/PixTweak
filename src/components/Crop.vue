@@ -36,11 +36,11 @@ const cropStore = useCropStore();
 const workStore = useWorkStore();
 const dCropArea = ref(null);
 
-function crop() {
-    if(workStore.editingImage === null) {
-        throw new Error("Image cannot be null");
-    }
-
+/**
+ * args as same as context.drawImage 
+ * for more info, check its documentation
+ */
+function cropImage( imageToCrop: CanvasImageSource, sx: number, sy: number, sw: number, sh: number, dw:number, dh:number ) {
     const canvas = document.createElement("canvas");
 
     // for getContext returning null, it can happen if you have already requested a different type of context.
@@ -50,21 +50,36 @@ function crop() {
         throw new Error("Context2D is null");
     }
 
-    const imgInfo = workStore.imageInfo;
-    const scaleFactor = imgInfo.nw / imgInfo.cw;
+    canvas.width = dw;
+    canvas.height = dh;
 
+    ctx.drawImage(imageToCrop, sx, sy, sw, sh, 0, 0, dw, dh);
+
+    return canvas;
+}
+
+function crop() {
+    if(workStore.editingImage === null) {
+        throw new Error("Image cannot be null");
+    }
+
+    const scaleFactor = 1 / workStore.scale;
+
+    // Destination Width and Height
     let {w, h} = cropStore.rect;
 
     w *= scaleFactor;
     h *= scaleFactor;
 
-    canvas.width = w;
-    canvas.height = h;
+    const resImage = cropImage(
+        workStore.editingImage,
+        cropStore.rect.x * scaleFactor,
+        cropStore.rect.y * scaleFactor,
+        w, h, w, h
+    );
 
-    ctx.drawImage(workStore.editingImage, cropStore.rect.x * scaleFactor, cropStore.rect.y * scaleFactor,
-    cropStore.rect.w * scaleFactor, cropStore.rect.h * scaleFactor, 0, 0, w, h);
-
-    downloadCanvas( canvas, "save" );
+    // workStore.setEditingImage( resImage );
+    // downloadCanvas( resImage, "save" );
 }
 
 document.addEventListener("keydown", e => {
