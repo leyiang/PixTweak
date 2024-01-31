@@ -75,7 +75,7 @@ loadImage( HugeSampleImage ).then( image => {
 window.addEventListener("keydown", e => {
     if (e.key === "-" && e.ctrlKey) {
         e.preventDefault();
-        console.log(("CTRL+-"));
+        workStore.downscale();
     }
 
     if (e.key === "=" && e.ctrlKey) {

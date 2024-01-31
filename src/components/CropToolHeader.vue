@@ -10,10 +10,18 @@
 
     <label for="crop-w">y</label>
     <input type="number" v-model="cropStore.rect.y">
+
+    <button @click="resetCrop">Reset</button>
 </template>
 
 <script setup lang="ts">
 import { useCropStore } from '@/stores/CropStore';
+import { useWorkStore } from '@/stores/WorkStore';
 
 const cropStore = useCropStore();
+const workStore = useWorkStore();
+
+function resetCrop() {
+    workStore.useOriginalImage();
+}
 </script>

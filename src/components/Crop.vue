@@ -37,15 +37,28 @@ const dCanvas = ref<HTMLCanvasElement | null>(null);
 
 const { scale, editingImage } = storeToRefs(workStore);
 
+
 watch(editingImage,() => {
     updateEditingImage( editingImage.value )
 });
 
-// watch(scale,() => {
-//     updateEditingImage( editingImage.value )
-// });
+// Keep track of scale value
+// Remove the meaning less repaint on scale init
+let currentScale = -1;
+
+watch(scale,() => {
+    /*
+     * No need to repaint
+     */
+    if( scale.value === currentScale ) {
+        return;
+    }
+
+    updateEditingImage( editingImage.value )
+});
 
 function updateEditingImage( imageSource: SupportImageSource | null ) {
+    currentScale = scale.value;
     
     if( imageSource === null ) {
         // Image is Null Logic

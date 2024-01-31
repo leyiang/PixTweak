@@ -43,6 +43,6 @@ export const useCropStore = defineStore('crop-store', {
         w: defaultCropWidth,
         h: defaultCropHeight,
       };
-    }
+    },
   },
 })

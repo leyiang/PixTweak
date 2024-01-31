@@ -81,14 +81,26 @@ export const useWorkStore = defineStore('work-store', {
 
     upscale( factor = .25) {
       this.scale += factor;
+      console.log("Work Store: sacle changed", this.scale);
+      
       // cropInfo.image.style.width = `${imgInfo.cw}px`;
       // cropInfo.image.style.height = `${imgInfo.ch}px`;
 
       // console.log(cropInfo.image);
     },
 
-    downscale() {
-
+    downscale(factor = .25) {
+      this.scale -= factor;
     },
+
+
+    useOriginalImage() {
+      if( this.originImage === null ) {
+        // Log
+        return;
+      }
+
+      this.setEditingImage( this.originImage );
+    }
   },
 })
