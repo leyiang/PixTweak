@@ -73,14 +73,29 @@ loadImage( HugeSampleImage ).then( image => {
 });
 
 window.addEventListener("keydown", e => {
+    // Ctrl + -
     if (e.key === "-" && e.ctrlKey) {
         e.preventDefault();
         workStore.downscale();
     }
 
+    // Ctrl + =
     if (e.key === "=" && e.ctrlKey) {
         e.preventDefault();
         workStore.upscale();
     }
+
+    // Shift + =
+    if( e.key === "+" && e.shiftKey ) {
+        e.preventDefault();
+        workStore.upscale();
+    }
+
+    // Shift + -
+    if( e.key === "_" && e.shiftKey ) {
+        e.preventDefault();
+        workStore.downscale();
+    }
+    
 });
 </script>
