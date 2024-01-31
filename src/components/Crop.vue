@@ -213,15 +213,15 @@ function mousemove(e: MouseEvent) {
             cropStore.rect.x = cropStore.oldRect.x + dx;
 
             if (cropStore.rect.x < 0) cropStore.rect.x = 0;
-            if (cropStore.rect.x + cropStore.rect.w > imgInfo.cw) {
-                cropStore.rect.x = imgInfo.cw - cropStore.rect.w;
+            if (cropStore.rect.x + cropStore.rect.w > imgInfo.w) {
+                cropStore.rect.x = imgInfo.w - cropStore.rect.w;
             }
 
             cropStore.rect.y = cropStore.oldRect.y + dy;
 
             if (cropStore.rect.y < 0) cropStore.rect.y = 0;
-            if (cropStore.rect.y + cropStore.rect.h > imgInfo.ch) {
-                cropStore.rect.y = imgInfo.ch - cropStore.rect.h;
+            if (cropStore.rect.y + cropStore.rect.h > imgInfo.h) {
+                cropStore.rect.y = imgInfo.h - cropStore.rect.h;
             }
         }
 
@@ -239,15 +239,15 @@ function mousemove(e: MouseEvent) {
 
             if (cropStore.resizing.right) {
                 cropStore.rect.w = cropStore.oldRect.w + dx;
-                if (cropStore.rect.w + cropStore.rect.x > imgInfo.cw) {
-                    cropStore.rect.w = imgInfo.cw - cropStore.rect.x;
+                if (cropStore.rect.w + cropStore.rect.x > imgInfo.w) {
+                    cropStore.rect.w = imgInfo.w - cropStore.rect.x;
                 }
             }
 
             if (cropStore.resizing.bottom) {
                 cropStore.rect.h = cropStore.oldRect.h + dy;
-                if (cropStore.rect.h + cropStore.rect.y > imgInfo.ch) {
-                    cropStore.rect.h = imgInfo.ch - cropStore.rect.y;
+                if (cropStore.rect.h + cropStore.rect.y > imgInfo.h) {
+                    cropStore.rect.h = imgInfo.h - cropStore.rect.y;
                 }
             }
 

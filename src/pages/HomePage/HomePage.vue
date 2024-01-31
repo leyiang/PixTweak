@@ -85,7 +85,7 @@ document.onpaste = (evt) => {
     });
 };
 
-loadImage( HugeSampleImage ).then( image => {
+loadImage( SampleImage ).then( image => {
     workStore.setImage( image );
 });
 

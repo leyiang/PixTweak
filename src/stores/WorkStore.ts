@@ -87,7 +87,7 @@ export const useWorkStore = defineStore('work-store', {
       this.scale = getDefaultScale( this.imageInfo, this.size );
     },
 
-    zoomIn( factor = .25) {
+    zoomIn( factor = .1) {
       this.scale += factor;
       console.log("Work Store: sacle changed", this.scale);
       
@@ -97,7 +97,12 @@ export const useWorkStore = defineStore('work-store', {
       // console.log(cropInfo.image);
     },
 
-    zoomOut(factor = .25) {
+    zoomOut(factor = .1) {
+      // min scale is .2
+      if( this.scale <= .2 ) {
+        return;
+      }
+
       this.scale -= factor;
     },
 
