@@ -1,4 +1,6 @@
 <template>
+    <span>Crop Tool </span>
+
     <label for="crop-w">width</label>
     <input type="number" v-model="cropStore.rect.w">
 

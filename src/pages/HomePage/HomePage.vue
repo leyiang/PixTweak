@@ -2,6 +2,8 @@
     <div class="app-wrap">
         <Header></Header>
 
+        <ToolList></ToolList>
+
         <main
             ref="dWorkWrap"
             class="work-wrap"
@@ -13,7 +15,8 @@
             >
                 <div class="editing-image-wrap">
                     <EditingImage></EditingImage>
-                    <CropTool></CropTool>
+                    <!-- <CropTool></CropTool> -->
+                    <component :is="toolStore.currentTool.mainComponent"></component>
                 </div>
             </div>
 
@@ -23,7 +26,7 @@
 
 <script setup lang="ts">
 import "@/assets/style/pages/HomePageStyle.css";
-import CropTool from "@/components/CropTool.vue";
+import CropTool from "@/tools/CropTool/CropTool.vue";
 import SampleImage from "@/assets/images/sample.png";
 import HugeSampleImage from "@/assets/images/huge_sample.jpg";
 import { loadImage } from "@/utils";
@@ -34,7 +37,10 @@ import { KeyboardShortcut } from "@/core/KeyboardShortcut";
 import { KeyboardState, PRESSED } from "@/core/KeyboardState";
 import { useWorkAreaDraggingStore } from "@/stores/WorkAreaDraggingStore";
 import EditingImage from "./EditingImage.vue";
+import { useToolStore } from "@/stores/ToolStore";
+import ToolList from "@/components/ToolList.vue";
 
+const toolStore = useToolStore();
 const workStore = useWorkStore();
 const areaDraggingStore = useWorkAreaDraggingStore();
 const dWorkWrap = ref<HTMLElement | null>(null);
