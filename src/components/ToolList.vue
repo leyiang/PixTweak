@@ -3,11 +3,16 @@
         <button
             v-for="[id, tool] in toolStore.tools"
             @click="toolStore.setCurrentTool(id)"
-        >{{ tool.name }}</button>
+            class="tool-item"
+            :title="tool.name"
+        >
+            <Icon :icon="tool.icon"></Icon>
+        </button>
     </div>
 </template>
 
 <script setup lang="ts">
+import { Icon } from "@iconify/vue"
 import "@/assets/style/components/ToolListStyle.css"
 import { useToolStore } from '@/stores/ToolStore';
 

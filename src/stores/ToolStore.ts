@@ -11,12 +11,14 @@ export const useToolStore = defineStore('tool-store', {
 
     tools.set("cursor-tool", {
         name: "Cursor",
+        icon: "fluent:cursor-16-regular",
         headerComponent: null,
         mainComponent: markRaw(CursorToolVue),
     });
 
     tools.set("crop-tool", {
         name: "Crop",
+        icon: "ri:crop-line",
         headerComponent: CropToolHeaderVue,
         mainComponent: markRaw(CropToolVue),
     });
