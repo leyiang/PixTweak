@@ -14,12 +14,16 @@
                 :style="workAreaStyle"
             >
                 <div class="editing-image-wrap">
-                    <EditingImage></EditingImage>
+                    <LayerRenderer></LayerRenderer>
                     <!-- <CropTool></CropTool> -->
-                    <component :is="toolStore.currentTool.mainComponent"></component>
+
+                    <div class="tool-wrap">
+                        <component :is="toolStore.currentTool.mainComponent"></component>
+                    </div>
                 </div>
             </div>
 
+            <LayerSelector></LayerSelector>
         </main>
     </div>
 </template>
@@ -36,9 +40,12 @@ import { useWorkStore } from "@/stores/WorkStore";
 import { KeyboardShortcut } from "@/core/KeyboardShortcut";
 import { KeyboardState, PRESSED } from "@/core/KeyboardState";
 import { useWorkAreaDraggingStore } from "@/stores/WorkAreaDraggingStore";
-import EditingImage from "./EditingImage.vue";
 import { useToolStore } from "@/stores/ToolStore";
 import ToolList from "@/components/ToolList.vue";
+import LayerSelector from "@/components/LayerSelector.vue";
+import LayerRenderer from "./LayerRenderer.vue";
+import { useLayerStore } from "@/stores/LayerStore";
+import { useCanvasStore } from "@/stores/CanvasStore";
 
 const toolStore = useToolStore();
 const workStore = useWorkStore();
@@ -93,8 +100,12 @@ document.onpaste = (evt) => {
     });
 };
 
-loadImage( SampleImage ).then( image => {
-    workStore.setImage( image );
+const layerStore = useLayerStore();
+const canvasStore = useCanvasStore();
+
+loadImage( HugeSampleImage ).then( image => {
+    layerStore.addLayer(image, "new layer");
+    canvasStore.setCanvasSizeBy(image);
 });
 
 const shortcut = new KeyboardShortcut();
@@ -111,23 +122,23 @@ keyState.addMapping(" ", (state: number) => {
 keyState.listenTo();
 
 shortcut.add("ctrl", "-", () => {
-    workStore.zoomOut();
+    canvasStore.zoomOut();
 });
 
 shortcut.add("ctrl", "=", () => {
-    workStore.zoomIn();
+    canvasStore.zoomIn();
 });
 
 shortcut.add("ctrl", "0", () => {
-    workStore.setDefaultScale();
+    canvasStore.setDefaultScale();
 });
 
 shortcut.add("shift", "+", () => {
-    workStore.zoomIn();
+    canvasStore.zoomIn();
 });
 
 shortcut.add("shift", "_", () => {
-    workStore.zoomOut();
+    canvasStore.zoomOut();
 });
 
 shortcut.startListen();
@@ -141,9 +152,9 @@ window.addEventListener("wheel", e => {
         const dir = Math.sign( e.deltaY );
 
         if( dir < 0 ) {
-            workStore.zoomIn();
+            canvasStore.zoomIn();
         } else {
-            workStore.zoomOut();
+            canvasStore.zoomOut();
         }
     }
 

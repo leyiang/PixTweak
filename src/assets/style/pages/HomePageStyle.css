@@ -25,3 +25,12 @@ html, #app, .app-wrap {
 .work-wrap.dragging {
     cursor: move;
 }
+
+.tool-wrap {
+    position: absolute;
+    inset: 0;
+}
+
+.tool-header {
+    height: 30px;
+}

@@ -1,3 +1,4 @@
+import BrushToolVue from '@/tools/BrushTool/BrushTool.vue';
 import CropToolVue from '@/tools/CropTool/CropTool.vue';
 import CropToolHeaderVue from '@/tools/CropTool/CropToolHeader.vue';
 import CursorToolVue from '@/tools/CursorTool/CursorTool.vue'
@@ -21,6 +22,13 @@ export const useToolStore = defineStore('tool-store', {
         icon: "ri:crop-line",
         headerComponent: markRaw(CropToolHeaderVue),
         mainComponent: markRaw(CropToolVue),
+    });
+
+    tools.set("brush-tool", {
+        name: "Brush",
+        icon: "ph:paint-brush-fill",
+        headerComponent: null,
+        mainComponent: markRaw(BrushToolVue),
     });
 
     return {

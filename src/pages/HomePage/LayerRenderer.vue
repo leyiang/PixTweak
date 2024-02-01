@@ -4,6 +4,8 @@
 
 <script setup lang="ts">
 import "@/assets/style/components/EditingImageStyle.css"
+import { useCanvasStore } from "@/stores/CanvasStore";
+import { useLayerStore } from "@/stores/LayerStore";
 import { useWorkStore } from '@/stores/WorkStore';
 import type { SupportImageSource } from '@/types/WorkStoreType';
 import { storeToRefs } from 'pinia';
@@ -13,12 +15,18 @@ const dCanvas = ref<HTMLCanvasElement | null>(null);
 
 let currentScale = -1;
 
+const layerStore = useLayerStore();
 const workStore = useWorkStore();
 
-const { scale, editingImage } = storeToRefs(workStore);
+const canvasStore = useCanvasStore();
 
-watch(editingImage,() => {
-    drawEditingImage( editingImage.value )
+const { scale } = storeToRefs(canvasStore);
+const { layers } = storeToRefs(layerStore);
+
+watch(layers, () => {
+    renderLayers();
+}, {
+    deep: true
 });
 
 // Keep track of scale value
@@ -31,20 +39,12 @@ watch(scale,() => {
         return;
     }
 
-    drawEditingImage( editingImage.value )
+    renderLayers();
 });
 
-/**
- * Return value indicates is repaint processed 
- */
-function drawEditingImage( imageSource: SupportImageSource | null ) : boolean {
+function renderLayers() {
     currentScale = scale.value;
     
-    if( imageSource === null ) {
-        // Image is Null Logic
-        return false;
-    }
-
     const canvas = dCanvas.value;
 
     if( canvas === null ) {
@@ -57,15 +57,24 @@ function drawEditingImage( imageSource: SupportImageSource | null ) : boolean {
         throw new Error("Someone reached the canvas, and getContext('webgl') before. Check it.")
     }
 
-    console.log("REpaint!", imageSource );
+    // const { cw, ch } = workStore.imageInfo;
 
-    const { cw, ch } = workStore.imageInfo;
+    const w = canvasStore.scaledWidth;
+    const h = canvasStore.scaledHeight;
 
-    canvas.width = cw;
-    canvas.height = ch;
+    canvas.width = w;
+    canvas.height = h;
 
-    ctx.drawImage( imageSource, 0, 0, cw, ch);
+    layerStore.layers.forEach(layer => {
+        console.log( layer );
 
+        if( layer.visibility ) {
+            ctx.drawImage( layer.source, 0, 0, w, h );
+        }
+    });
+
+
+    canvasStore.setResultCanvas( canvas );
     return true;
 }
 </script>

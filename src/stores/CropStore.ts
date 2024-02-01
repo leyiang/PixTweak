@@ -2,6 +2,9 @@
 import { defineStore } from 'pinia'
 import { useWorkStore } from './WorkStore';
 import { cropImage, downloadCanvas } from '@/utils';
+import { useCanvasStore } from './CanvasStore';
+import { useLayerStore } from './LayerStore';
+import { useToolStore } from './ToolStore';
 
 const defaultCropWidth = 100;
 const defaultCropHeight = 100;
@@ -33,18 +36,18 @@ export const useCropStore = defineStore('crop-store', {
         bottom: false,
         right: false,
       },
-
-      currentScale: 1,
     }
   },
 
   getters: {
     scaledRect(state) {
+      const canvasStore = useCanvasStore();
+
       return {
-        x: state.rect.x * state.currentScale,
-        y: state.rect.y * state.currentScale,
-        w: state.rect.w * state.currentScale,
-        h: state.rect.h * state.currentScale,
+        x: state.rect.x * canvasStore.scale,
+        y: state.rect.y * canvasStore.scale,
+        w: state.rect.w * canvasStore.scale,
+        h: state.rect.h * canvasStore.scale,
       }
     }
   },
@@ -65,29 +68,37 @@ export const useCropStore = defineStore('crop-store', {
       console.log( this.oldRect );
     },
 
-    applyScale( scale: number ) {
-      if( scale === this.currentScale ) return;
-      this.currentScale = scale;
-    },
-
     crop() {
-      const workStore = useWorkStore();
+      // const workStore = useWorkStore();
 
-      if(workStore.editingImage === null) {
-          throw new Error("Image cannot be null");
-      }
+      // if(workStore.editingImage === null) {
+      //     throw new Error("Image cannot be null");
+      // }
 
       // Destination Width and Height
       // No need to scale
-      let {w, h, x, y} = this.rect;
+      const {w, h, x, y} = this.rect;
 
-      const resImage = cropImage(
-          workStore.editingImage,
-          x, y,
-          w, h, w, h
-      );
+      // Set Canvas Sizes
+      const canvasStore = useCanvasStore();
+      canvasStore.setCanvasSize(w, h);
 
-      workStore.setEditingImage( resImage );
+      const layerStore = useLayerStore();
+      layerStore.layers.forEach( layer => {
+        const resImage = cropImage(
+            layer.source,
+            x, y,
+            w, h, w, h
+        );
+
+        layer.source = resImage;
+      });
+
+      this.updateCropInfo();
+      const toolStore = useToolStore();
+
+      toolStore.resetToolToDefault();
+      // workStore.setEditingImage( resImage );
     }
   },
 })

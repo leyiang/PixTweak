@@ -25,27 +25,24 @@
 
 <script setup lang="ts">
 import "@/assets/style/tools/CropToolStyle.css"
+import { useCanvasStore } from "@/stores/CanvasStore";
 import { useCropStore } from "@/stores/CropStore";
 import { useWorkAreaDraggingStore } from "@/stores/WorkAreaDraggingStore";
 import { useWorkStore } from "@/stores/WorkStore";
 import { storeToRefs } from "pinia";
 import { computed, reactive, ref, watch } from "vue";
 
+const canvasStore = useCanvasStore();
 const cropStore = useCropStore();
 const workStore = useWorkStore();
 const dCropArea = ref(null);
 
-const { scale, editingImage } = storeToRefs(workStore);
+const { editingImage } = storeToRefs(workStore);
 const areaDraggingStore = useWorkAreaDraggingStore();
 
-
-watch(editingImage, () => {
-    cropStore.updateCropInfo();
-});
-
-watch(scale, () => {
-    cropStore.applyScale( scale.value );
-});
+// watch(editingImage, () => {
+//     cropStore.updateCropInfo();
+// });
 
 document.addEventListener("keydown", e => {
     if( e.key === "Enter" ) {
@@ -144,27 +141,27 @@ function mousedown(e: MouseEvent) {
 
 function mousemove(e: MouseEvent) {
     if (cropStore.isMoving || cropStore.isResizing) {
-        const imgInfo = workStore.imageInfo;
-
         mouseInfo.currentX = e.clientX;
         mouseInfo.currentY = e.clientY;
 
-        const dx = (mouseInfo.currentX - mouseInfo.startX) / workStore.scale;
-        const dy = (mouseInfo.currentY - mouseInfo.startY) / workStore.scale;
+        console.log( canvasStore.scale, canvasStore.w );
+        
+        const dx = (mouseInfo.currentX - mouseInfo.startX) / canvasStore.scale;
+        const dy = (mouseInfo.currentY - mouseInfo.startY) / canvasStore.scale;
 
         if (cropStore.isMoving) {
             cropStore.rect.x = cropStore.oldRect.x + dx;
 
             if (cropStore.rect.x < 0) cropStore.rect.x = 0;
-            if (cropStore.rect.x + cropStore.rect.w > imgInfo.w) {
-                cropStore.rect.x = imgInfo.w - cropStore.rect.w;
+            if (cropStore.rect.x + cropStore.rect.w > canvasStore.w) {
+                cropStore.rect.x = canvasStore.w - cropStore.rect.w;
             }
 
             cropStore.rect.y = cropStore.oldRect.y + dy;
 
             if (cropStore.rect.y < 0) cropStore.rect.y = 0;
-            if (cropStore.rect.y + cropStore.rect.h > imgInfo.h) {
-                cropStore.rect.y = imgInfo.h - cropStore.rect.h;
+            if (cropStore.rect.y + cropStore.rect.h > canvasStore.h) {
+                cropStore.rect.y = canvasStore.h - cropStore.rect.h;
             }
         }
 
@@ -182,15 +179,15 @@ function mousemove(e: MouseEvent) {
 
             if (cropStore.resizing.right) {
                 cropStore.rect.w = cropStore.oldRect.w + dx;
-                if (cropStore.rect.w + cropStore.rect.x > imgInfo.w) {
-                    cropStore.rect.w = imgInfo.w - cropStore.rect.x;
+                if (cropStore.rect.w + cropStore.rect.x > canvasStore.w) {
+                    cropStore.rect.w = canvasStore.w - cropStore.rect.x;
                 }
             }
 
             if (cropStore.resizing.bottom) {
                 cropStore.rect.h = cropStore.oldRect.h + dy;
-                if (cropStore.rect.h + cropStore.rect.y > imgInfo.h) {
-                    cropStore.rect.h = imgInfo.h - cropStore.rect.y;
+                if (cropStore.rect.h + cropStore.rect.y > canvasStore.h) {
+                    cropStore.rect.h = canvasStore.h - cropStore.rect.y;
                 }
             }
 

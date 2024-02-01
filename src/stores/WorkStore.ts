@@ -6,8 +6,6 @@ import { useWorkAreaDraggingStore } from './WorkAreaDraggingStore';
 export const useWorkStore = defineStore('work-store', {
   state: () => {
     return {
-      scale: 1,
-
       // Uploaded Image without Change
       originImage: null as SupportImageSource | null,
 
@@ -22,33 +20,33 @@ export const useWorkStore = defineStore('work-store', {
   },
 
   getters: {
-    imageInfo(state) : ImgInfo {
-      const image = state.editingImage;
+    // imageInfo(state) : ImgInfo {
+    //   const image = state.editingImage;
 
-      if( image === null ) {
-        throw new Error("img is null");
-      }
+    //   if( image === null ) {
+    //     throw new Error("img is null");
+    //   }
 
-      let nw = 0, nh = 0;
+    //   let nw = 0, nh = 0;
 
-      if( image instanceof HTMLImageElement ) {
-        nw = image.naturalWidth;
-        nh = image.naturalHeight;
-      } else if ( image instanceof HTMLCanvasElement ) {
-        nw = image.width;
-        nh = image.height;
-      }
+    //   if( image instanceof HTMLImageElement ) {
+    //     nw = image.naturalWidth;
+    //     nh = image.naturalHeight;
+    //   } else if ( image instanceof HTMLCanvasElement ) {
+    //     nw = image.width;
+    //     nh = image.height;
+    //   }
 
-      return {
-        nw: nw,
-        nh: nh,
+    //   return {
+    //     nw: nw,
+    //     nh: nh,
 
-        w: nw,
-        h: nh,
-        cw: nw * this.scale,
-        ch: nh * this.scale,
-      }
-    }
+    //     w: nw,
+    //     h: nh,
+    //     cw: nw * this.scale,
+    //     ch: nh * this.scale,
+    //   }
+    // }
   },
 
   actions: {
@@ -72,40 +70,6 @@ export const useWorkStore = defineStore('work-store', {
       this.setDefaultScale();
       areaDraggingStore.resetMoveOffset();
     },
-
-    setDefaultScale() {
-      function getDefaultScale(imgInfo: ImgInfo, size: WorkSize) : number {
-        let scale = 1;
-
-        if( imgInfo.nh > size.height ) {
-          scale = (size.height - 40) / imgInfo.nh;
-        }
-
-        return scale;
-      }
-
-      this.scale = getDefaultScale( this.imageInfo, this.size );
-    },
-
-    zoomIn( factor = .1) {
-      this.scale += factor;
-      console.log("Work Store: sacle changed", this.scale);
-      
-      // cropInfo.image.style.width = `${imgInfo.cw}px`;
-      // cropInfo.image.style.height = `${imgInfo.ch}px`;
-
-      // console.log(cropInfo.image);
-    },
-
-    zoomOut(factor = .1) {
-      // min scale is .2
-      if( this.scale <= .2 ) {
-        return;
-      }
-
-      this.scale -= factor;
-    },
-
 
     useOriginalImage() {
       if( this.originImage === null ) {
