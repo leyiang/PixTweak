@@ -1,47 +1,39 @@
 <template>
-    <div class="image-cropper" :class="imgCropperClass">
-        <div class="image-wrap">
-            <EditingImage></EditingImage>
-
+        <div class="image-cropper" :class="imgCropperClass">
             <div
                 class="image-mask"
                 v-show="! areaDraggingStore.dragging"
             ></div>
-        </div>
 
-        <div
-            class="crop-area"
-            ref="dCropArea"
-            :style="cropAreaStyle"
-            v-show="! areaDraggingStore.dragging"
-        >
-            <div class="crop-handle handle-top handle-left"></div>
-            <div class="crop-handle handle-top handle-hmid"></div>
-            <div class="crop-handle handle-top handle-right"></div>
-            <div class="crop-handle handle-vmid handle-left"></div>
-            <div class="crop-handle handle-vmid handle-right"></div>
-            <div class="crop-handle handle-bottom handle-left"></div>
-            <div class="crop-handle handle-bottom handle-hmid"></div>
-            <div class="crop-handle handle-bottom handle-right"></div>
+            <div
+                class="crop-area"
+                ref="dCropArea"
+                :style="cropAreaStyle"
+                v-show="! areaDraggingStore.dragging"
+            >
+                <div class="crop-handle handle-top handle-left"></div>
+                <div class="crop-handle handle-top handle-hmid"></div>
+                <div class="crop-handle handle-top handle-right"></div>
+                <div class="crop-handle handle-vmid handle-left"></div>
+                <div class="crop-handle handle-vmid handle-right"></div>
+                <div class="crop-handle handle-bottom handle-left"></div>
+                <div class="crop-handle handle-bottom handle-hmid"></div>
+                <div class="crop-handle handle-bottom handle-right"></div>
+            </div>
         </div>
-    </div>
 </template>
 
 <script setup lang="ts">
 import "@/assets/style/components/CropStyle.css"
-import EditingImage from "@/pages/HomePage/EditingImage.vue";
 import { useCropStore } from "@/stores/CropStore";
 import { useWorkAreaDraggingStore } from "@/stores/WorkAreaDraggingStore";
 import { useWorkStore } from "@/stores/WorkStore";
-import type { SupportImageSource } from "@/types/WorkStoreType";
-import { downloadCanvas } from "@/utils";
 import { storeToRefs } from "pinia";
 import { computed, reactive, ref, watch } from "vue";
 
 const cropStore = useCropStore();
 const workStore = useWorkStore();
 const dCropArea = ref(null);
-const dCanvas = ref<HTMLCanvasElement | null>(null);
 
 const { scale, editingImage } = storeToRefs(workStore);
 const areaDraggingStore = useWorkAreaDraggingStore();

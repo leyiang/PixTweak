@@ -11,7 +11,10 @@
                 class="working-area"
                 :style="workAreaStyle"
             >
-                <Crop></Crop>
+                <div class="editing-image-wrap">
+                    <EditingImage></EditingImage>
+                    <CropTool></CropTool>
+                </div>
             </div>
 
         </main>
@@ -20,19 +23,18 @@
 
 <script setup lang="ts">
 import "@/assets/style/pages/HomePageStyle.css";
-import Crop from "@/components/Crop.vue";
+import CropTool from "@/components/CropTool.vue";
 import SampleImage from "@/assets/images/sample.png";
 import HugeSampleImage from "@/assets/images/huge_sample.jpg";
 import { loadImage } from "@/utils";
-import { useCropStore } from "@/stores/CropStore";
 import Header from "./Header.vue";
 import { computed, onMounted, ref } from "vue";
 import { useWorkStore } from "@/stores/WorkStore";
 import { KeyboardShortcut } from "@/core/KeyboardShortcut";
 import { KeyboardState, PRESSED } from "@/core/KeyboardState";
 import { useWorkAreaDraggingStore } from "@/stores/WorkAreaDraggingStore";
+import EditingImage from "./EditingImage.vue";
 
-const cropStore = useCropStore();
 const workStore = useWorkStore();
 const areaDraggingStore = useWorkAreaDraggingStore();
 const dWorkWrap = ref<HTMLElement | null>(null);

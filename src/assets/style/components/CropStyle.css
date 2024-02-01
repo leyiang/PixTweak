@@ -1,5 +1,6 @@
 .image-cropper {
-    position: relative;
+    position: absolute;
+    inset: 0;
 }
 
 .image-cropper * {
@@ -20,12 +21,6 @@
 }
 
 .image-wrap {
-    position: relative;
-    display: inline-block;
-
-    color: #DDD;
-    background-image: conic-gradient(currentColor 0 25%, transparent 0 50%, currentColor 0 75%, transparent 0);
-    background-size: 16px 16px;
 }
 
 .image-wrap canvas {
@@ -124,4 +119,17 @@
 
 .handle-left.handle-bottom {
     cursor: sw-resize;
+}
+
+.editing-image-wrap {
+    position: relative;
+    display: inline-block;
+
+    color: #DDD;
+    background-image: conic-gradient(currentColor 0 25%, transparent 0 50%, currentColor 0 75%, transparent 0);
+    background-size: 16px 16px;
+}
+
+.editing-image-wrap canvas {
+    display: block;
 }
