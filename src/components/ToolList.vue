@@ -5,6 +5,7 @@
             @click="toolStore.setCurrentTool(id)"
             class="tool-item"
             :title="tool.name"
+            :class="{selected: id === toolStore.currentID}"
         >
             <Icon :icon="tool.icon"></Icon>
         </button>

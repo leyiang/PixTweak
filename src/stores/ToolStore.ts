@@ -36,8 +36,12 @@ export const useToolStore = defineStore('tool-store', {
   },
 
   actions: {
+    resetToolToDefault() {
+        this.setCurrentTool("cursor-tool");
+    },
+
     setCurrentTool( id: string ) {
         this.currentID = id;
-    }
+    },
   },
 })

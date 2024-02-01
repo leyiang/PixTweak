@@ -188,4 +188,10 @@ window.addEventListener("mouseup", e => {
     areaDraggingStore.oldOffset.x = areaDraggingStore.moveOffset.x;
     areaDraggingStore.oldOffset.y = areaDraggingStore.moveOffset.y;
 });
+
+window.addEventListener("keydown", e => {
+    if( e.key === "Escape" ) {
+        toolStore.resetToolToDefault();
+    }
+});
 </script>

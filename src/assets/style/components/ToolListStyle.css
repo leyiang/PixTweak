@@ -16,3 +16,7 @@
     justify-content: center;
     font-size: 16px;
 }
+
+.tool-item.selected {
+    background: yellow;
+}
