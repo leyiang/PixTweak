@@ -19,7 +19,7 @@ export const useToolStore = defineStore('tool-store', {
     tools.set("crop-tool", {
         name: "Crop",
         icon: "ri:crop-line",
-        headerComponent: CropToolHeaderVue,
+        headerComponent: markRaw(CropToolHeaderVue),
         mainComponent: markRaw(CropToolVue),
     });
 
