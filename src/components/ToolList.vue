@@ -8,6 +8,7 @@
 </template>
 
 <script setup lang="ts">
+import "@/assets/style/components/ToolListStyle.css"
 import { useToolStore } from '@/stores/ToolStore';
 
 const toolStore = useToolStore();

@@ -1,0 +1,7 @@
+.tool-list {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 10px;
+    top: 100px;
+}

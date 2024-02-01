@@ -20,13 +20,6 @@
     cursor: none;
 }
 
-.image-wrap {
-}
-
-.image-wrap canvas {
-    display: block;
-}
-
 .image-mask {
     position: absolute;
     inset: 0;
@@ -119,26 +112,4 @@
 
 .handle-left.handle-bottom {
     cursor: sw-resize;
-}
-
-.editing-image-wrap {
-    position: relative;
-    display: inline-block;
-
-    color: #DDD;
-    background-image: conic-gradient(currentColor 0 25%, transparent 0 50%, currentColor 0 75%, transparent 0);
-    background-size: 16px 16px;
-}
-
-.editing-image-wrap canvas {
-    display: block;
-}
-
-
-.tool-list {
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    left: 10px;
-    top: 100px;
 }

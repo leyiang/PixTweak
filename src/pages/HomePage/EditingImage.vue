@@ -3,6 +3,7 @@
 </template>
 
 <script setup lang="ts">
+import "@/assets/style/components/EditingImageStyle.css"
 import { useWorkStore } from '@/stores/WorkStore';
 import type { SupportImageSource } from '@/types/WorkStoreType';
 import { storeToRefs } from 'pinia';

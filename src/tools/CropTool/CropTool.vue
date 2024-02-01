@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import "@/assets/style/components/CropStyle.css"
+import "@/assets/style/tools/CropToolStyle.css"
 import { useCropStore } from "@/stores/CropStore";
 import { useWorkAreaDraggingStore } from "@/stores/WorkAreaDraggingStore";
 import { useWorkStore } from "@/stores/WorkStore";
