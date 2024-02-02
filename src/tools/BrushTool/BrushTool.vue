@@ -46,7 +46,8 @@ window.addEventListener("mousedown", e => {
         return;
     }
 
-    if( e.target.classList.contains("brush-area") ) {
+    // Only left click can draw
+    if( e.target.classList.contains("brush-area") && e.buttons === 1 ) {
         paintStart.value = true;
     }
 });

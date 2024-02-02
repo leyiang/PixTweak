@@ -174,47 +174,74 @@ const cur = {
 
 let startDragging = false;
 
+const brushStore = useBrushStore();
+const resizeBrush = ref(false);
+
 window.addEventListener("mousedown", e => {
-    if( areaDraggingStore.dragging ) {
+
+    if( resizeBrush.value || areaDraggingStore.dragging ) {
         start.x = e.clientX;
         start.y = e.clientY;
+    }
 
+    if( areaDraggingStore.dragging ) {
         startDragging = true;
     }
 });
 
+let oldSize = 0;
+window.addEventListener("contextmenu", e => {
+    if( e.altKey ) {
+        start.x = e.clientX;
+        start.y = e.clientY;
+
+        e.preventDefault();
+        resizeBrush.value = true;
+        oldSize = brushStore.lineWidth;
+    }
+});
+
 window.addEventListener("mousemove", e => {
-    if( areaDraggingStore.dragging && startDragging ) {
+    if( resizeBrush.value || areaDraggingStore.dragging ) {
         cur.x = e.clientX;
         cur.y = e.clientY;
 
         const dx = cur.x - start.x;
         const dy = cur.y - start.y;
 
-        areaDraggingStore.moveOffset.x = areaDraggingStore.oldOffset.x + dx;
-        areaDraggingStore.moveOffset.y = areaDraggingStore.oldOffset.y + dy;
+        if( resizeBrush.value ) {
+            console.log(dx);
+            
+            brushStore.lineWidth = oldSize + dx;
+        }
+
+        if( areaDraggingStore.dragging && startDragging ) {
+            areaDraggingStore.moveOffset.x = areaDraggingStore.oldOffset.x + dx;
+            areaDraggingStore.moveOffset.y = areaDraggingStore.oldOffset.y + dy;
+        }
     }
+
 });
 
 window.addEventListener("mouseup", e => {
+    resizeBrush.value = false;
     startDragging = false;
 
     areaDraggingStore.oldOffset.x = areaDraggingStore.moveOffset.x;
     areaDraggingStore.oldOffset.y = areaDraggingStore.moveOffset.y;
 });
 
-const brushStore = useBrushStore();
 
 window.addEventListener("keydown", e => {
     if( e.key === "Escape" ) {
         toolStore.resetToolToDefault();
     }
 
-    if( e.key === "[" ) {
+    if( e.key === "]" ) {
         brushStore.increaseBrusSize();
     }
 
-    if( e.key === "]" ) {
+    if( e.key === "[" ) {
         brushStore.decreaseBrusSize();
     }
 });
