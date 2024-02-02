@@ -60,8 +60,8 @@ export const useCanvasStore = defineStore('canvas-store', {
 
       const workStore = useWorkStore();
 
-      // this.scale = getDefaultScale( this.w, this.h, workStore.size );
-      this.scale = 1;
+      this.scale = getDefaultScale( this.w, this.h, workStore.size );
+      // this.scale = 1;
     },
 
     zoomIn( factor = .1) {
