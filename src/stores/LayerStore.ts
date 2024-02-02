@@ -1,7 +1,7 @@
 import type { SupportImageSource } from "@/types/WorkStoreType";
-import type { Layer } from '@/types/LayerStoreType';
 import { defineStore } from 'pinia'
 import { useCanvasStore } from "./CanvasStore";
+import { Layer } from "@/core/Layer";
 
 export const useLayerStore = defineStore('layer-store', {
   state: () => {
@@ -13,13 +13,9 @@ export const useLayerStore = defineStore('layer-store', {
 
   actions: {
     addLayer(source: SupportImageSource, name = "no-name") {
-        console.log("Update layers");
-        
-        this.layers.push({
-            name,
-            source,
-            visibility: true,
-        });
+        this.layers.push(
+            new Layer(name, source)
+        );
 
         this.switchCurrentLayer( this.layers.length - 1 );
     },

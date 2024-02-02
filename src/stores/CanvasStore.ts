@@ -11,8 +11,6 @@ export const useCanvasStore = defineStore('canvas-store', {
       w: 0,
       h: 0,
       scale: 1,
-
-      drawings: [],
       resultCanvas: null as null | HTMLCanvasElement
     }
   },

@@ -9,9 +9,10 @@
 
 <script setup lang="ts">
 import "@/assets/style/tools/BrushToolStyle.css"
+import { Vec } from "@/core/Vec";
+import { useBrushStore } from "@/stores/BrushStore";
 import { useCanvasStore } from "@/stores/CanvasStore";
 import { useLayerStore } from "@/stores/LayerStore";
-import { renderDrawings } from "@/utils";
 import { computed, reactive, ref } from "vue";
 
 const pos = reactive({
@@ -44,14 +45,23 @@ window.addEventListener("mousedown", e => {
 });
 
 const canvasStore = useCanvasStore();
+const brushStore = useBrushStore();
 
 window.addEventListener("mousemove", e => {
     if( paintStart.value ) {
-        canvasStore.drawings.push( {x: e.offsetX, y:e.offsetY} );
+        brushStore.drawings.push(
+            new Vec(e.offsetX, e.offsetY)
+        );
 
-    const layer = layerStore.getCurrentLayer();
-    const ctx = layer.source.getContext("2d");
-    renderDrawings( canvasStore.drawings, ctx, canvasStore.scale );
+        const layer = layerStore.getCurrentLayer();
+        const ctx = layer.source.getContext("2d");
+
+        if( ctx === null ) {
+            console.log( layer );
+            throw new Error("Get context from layer is null");
+        }
+
+        brushStore.renderDrawings( ctx, canvasStore.scale );
     }
 });
 
@@ -59,11 +69,8 @@ const layerStore = useLayerStore();
 
 function resetDrawing() {
     paintStart.value = false;
-    canvasStore.drawings = [];
+    brushStore.drawings.length = 0;
 }
 
-window.addEventListener("mouseup", e => {
-    paintStart.value = false;
-    canvasStore.drawings = [];
-});
+window.addEventListener("mouseup", resetDrawing);
 </script>
