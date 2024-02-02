@@ -40,6 +40,14 @@ export const useBrushStore = defineStore('brush-store', {
             ctx.lineJoin = "round";
             ctx.lineWidth = this.lineWidth;
             ctx.stroke();
-        }
+        },
+
+        increaseBrusSize( factor = 5 ) {
+            this.lineWidth += factor;
+        },
+
+        decreaseBrusSize( factor = 5 ) {
+            this.lineWidth -= factor;
+        },
     },
 })

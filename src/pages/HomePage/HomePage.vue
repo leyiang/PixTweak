@@ -46,6 +46,8 @@ import LayerSelector from "@/components/LayerSelector.vue";
 import LayerRenderer from "./LayerRenderer.vue";
 import { useLayerStore } from "@/stores/LayerStore";
 import { useCanvasStore } from "@/stores/CanvasStore";
+import { useBrushStore } from "@/stores/BrushStore";
+import BrushTool from "@/tools/BrushTool/BrushTool.vue";
 
 const toolStore = useToolStore();
 const workStore = useWorkStore();
@@ -201,9 +203,20 @@ window.addEventListener("mouseup", e => {
     areaDraggingStore.oldOffset.y = areaDraggingStore.moveOffset.y;
 });
 
+const brushStore = useBrushStore();
+
 window.addEventListener("keydown", e => {
     if( e.key === "Escape" ) {
         toolStore.resetToolToDefault();
     }
+
+    if( e.key === "[" ) {
+        brushStore.increaseBrusSize();
+    }
+
+    if( e.key === "]" ) {
+        brushStore.decreaseBrusSize();
+    }
 });
+
 </script>
