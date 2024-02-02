@@ -62,14 +62,9 @@ window.addEventListener("mousemove", e => {
         );
 
         const layer = layerStore.getCurrentLayer();
-        const ctx = layer.source.getContext("2d");
+        const ctx = layer.getContext();;
 
-        if( ctx === null ) {
-            console.log( layer );
-            throw new Error("Get context from layer is null");
-        }
-
-        brushStore.renderDrawings( ctx, canvasStore.scale );
+        brushStore.renderDrawings( ctx, layer.paintOnMask );
     }
 });
 

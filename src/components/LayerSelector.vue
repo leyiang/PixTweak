@@ -14,8 +14,20 @@
                         class="visibility-toggler"
                     >
 
-                    <div class="layer-preview"></div>
+                    <div
+                        class="layer-preview"
+                        :class="{selected: ! layer.paintOnMask}"
+                        @click="layer.paintOnMask = false"
+                    ></div>
                     <span>{{ layer.name }}</span>
+
+                    <div
+                        v-if="layer.mask !== null"
+                        class="mask-preview"
+                        :class="{selected: layer.paintOnMask}"
+                        @click="layer.paintOnMask = true"
+                    >
+                    </div>
                 </div>
             </div>
         </template>
@@ -24,7 +36,19 @@
             No layers
         </div>
 
-        <button @click="layerStore.addEmptyLayer">+</button>
+        <div class="layer-actions">
+            <button
+                class="layer-action-btn"
+                @click="layerStore.addEmptyLayer"
+            >+</button>
+
+            <button
+                class="layer-action-btn"
+                @click="addMask"
+            >
+                <Icon icon="radix-icons:mask-on"></Icon>
+            </button>
+        </div>
     </div>
 </template>
 
@@ -32,9 +56,15 @@
 import "@/assets/style/components/LayerSelectorStyle.css"
 import { useLayerStore } from "@/stores/LayerStore";
 import { computed } from "vue";
+import { Icon } from "@iconify/vue";
 
 const layerStore = useLayerStore();
 const reversedLayers = computed(() => {
     return layerStore.layers.slice().reverse();
 });
+
+function addMask() {
+    const layer = layerStore.getCurrentLayer();
+    layer.createMask();
+}
 </script>

@@ -1,20 +1,22 @@
 import type { Vec } from '@/core/Vec';
 import { defineStore } from 'pinia'
+import { useCanvasStore } from './CanvasStore';
 
 export const useBrushStore = defineStore('brush-store', {
     state: () => {
         return {
             drawings: [] as Vec[],
             lineWidth: 30,
+            color: "#FFFFFF",
         }
     },
 
-
     actions: {
-        renderDrawings(ctx: CanvasRenderingContext2D, scale = 1) {
+        renderDrawings(ctx: CanvasRenderingContext2D, drawOnMask = false) {
             const drawingPoints = this.drawings;
+            const canvasStore = useCanvasStore();
+            const scale = 1 / canvasStore.scale;
 
-            scale = 1 / scale;
             ctx.beginPath();
 
             for (let i = 1; i < drawingPoints.length; i++) {
@@ -38,16 +40,36 @@ export const useBrushStore = defineStore('brush-store', {
 
             ctx.lineCap = 'round';
             ctx.lineJoin = "round";
+            ctx.strokeStyle = this.color;
             ctx.lineWidth = this.lineWidth;
+
+            // stimulate photoshop mask
+            // white to show things
+            // black to hide things
+            if (drawOnMask) {
+                if (this.color === "#FFFFFF") {
+                    ctx.globalCompositeOperation = "destination-out";
+                }
+            }
+
             ctx.stroke();
+            ctx.globalCompositeOperation = "source-over";
         },
 
-        increaseBrusSize( factor = 5 ) {
+        increaseBrusSize(factor = 5) {
             this.lineWidth += factor;
         },
 
-        decreaseBrusSize( factor = 5 ) {
+        decreaseBrusSize(factor = 5) {
             this.lineWidth -= factor;
         },
+
+        switchBlackWhiteColor() {
+            if (this.color === "#FFFFFF") {
+                this.color = "#000000";
+            } else {
+                this.color = "#FFFFFF";
+            }
+        }
     },
 })

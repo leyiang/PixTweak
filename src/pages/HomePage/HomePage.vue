@@ -244,6 +244,10 @@ window.addEventListener("keydown", e => {
     if( e.key === "[" ) {
         brushStore.decreaseBrusSize();
     }
+
+    if( e.key === "x" ) {
+        brushStore.switchBlackWhiteColor();
+    }
 });
 
 </script>

@@ -37,6 +37,29 @@
     margin-right: .5rem;
 }
 
-.layer-item.selected{
+.layer-item.selected {
     background: skyblue;
- }
+}
+
+.layer-actions {
+    display: flex;
+}
+
+.layer-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mask-preview {
+    width: 40px;
+    height: 20px;
+    background: #FFF;
+    border: 1px solid #000;
+    margin-right: .5rem;
+}
+
+.layer-preview.selected,
+.mask-preview.selected {
+    outline: 2px solid red;
+}

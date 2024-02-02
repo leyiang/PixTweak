@@ -76,7 +76,8 @@ function renderLayers() {
 
     layerStore.layers.forEach(layer => {
         if( layer.visibility ) {
-            ctx.drawImage( layer.source, 0, 0, w, h );
+            const source = layer.renderLayer();
+            ctx.drawImage( source, 0, 0, w, h );
         }
     });
 

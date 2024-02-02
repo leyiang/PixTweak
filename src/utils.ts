@@ -58,3 +58,12 @@ export function cropImage( imageToCrop: CanvasImageSource, sx: number, sy: numbe
 
     return canvas;
 }
+
+export function getNewCanvas( width:number, height:number ) {
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+
+    const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+    return { canvas, context };
+}
