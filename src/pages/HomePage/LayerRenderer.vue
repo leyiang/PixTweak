@@ -78,9 +78,6 @@ function renderLayers() {
         }
     });
 
-
-    renderDrawings( canvasStore.drawings, ctx );
-    
     canvasStore.setResultCanvas( canvas );
     return true;
 }

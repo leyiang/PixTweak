@@ -1,10 +1,9 @@
 <template>
-    <div class="brush-area" @mouseout="hideCursor">
+    <div class="brush-area" @mouseout="resetDrawing">
         <div
             class="brush-cursor"
             :style="brushCursorStyle"
         ></div>
-
     </div>
 </template>
 
@@ -49,20 +48,22 @@ const canvasStore = useCanvasStore();
 window.addEventListener("mousemove", e => {
     if( paintStart.value ) {
         canvasStore.drawings.push( {x: e.offsetX, y:e.offsetY} );
+
+    const layer = layerStore.getCurrentLayer();
+    const ctx = layer.source.getContext("2d");
+    renderDrawings( canvasStore.drawings, ctx, canvasStore.scale );
     }
 });
 
 const layerStore = useLayerStore();
 
+function resetDrawing() {
+    paintStart.value = false;
+    canvasStore.drawings = [];
+}
+
 window.addEventListener("mouseup", e => {
     paintStart.value = false;
-
-
-    const layer = layerStore.getCurrentLayer();
-
-    const ctx = layer.source.getContext("2d");
-    renderDrawings( canvasStore.drawings, ctx, canvasStore.scale );
-    
     canvasStore.drawings = [];
 });
 </script>

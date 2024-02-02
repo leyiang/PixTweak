@@ -67,8 +67,8 @@ export function renderDrawings( drawingPoints, ctx: CanvasRenderingContext2D, sc
         const current = drawingPoints[i];
 
         if( i === 1 ) {
-            ctx.moveTo( prev.x, prev.y );
-            ctx.lineTo( current.x, current.y );
+            ctx.moveTo( prev.x * scale, prev.y * scale );
+            ctx.lineTo( current.x * scale, current.y * scale );
         } else {
             const start = drawingPoints[i-2];
             const lastX = (start.x + prev.x) / 2;
@@ -83,6 +83,6 @@ export function renderDrawings( drawingPoints, ctx: CanvasRenderingContext2D, sc
 
     ctx.lineCap = 'round';
     ctx.lineJoin = "round";
-    ctx.lineWidth = 10;
+    ctx.lineWidth = 30;
     ctx.stroke();
 }
