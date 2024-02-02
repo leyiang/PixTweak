@@ -1,5 +1,8 @@
 <template>
-    <div class="brush-area" @mouseout="resetDrawing">
+    <div class="brush-area"
+        @mouseout="mouseout"
+        @mouseenter="mouseenter"
+    >
         <div
             class="brush-cursor"
             :style="brushCursorStyle"
@@ -15,22 +18,26 @@ import { useCanvasStore } from "@/stores/CanvasStore";
 import { useLayerStore } from "@/stores/LayerStore";
 import { computed, reactive, ref } from "vue";
 
-const pos = reactive({
-    x: 0,
-    y: 0,
+const cursorInfo = reactive({
+    pos: new Vec(0, 0),
     hidden: false,
 });
 
+const brushStore = useBrushStore();
+const canvasStore = useCanvasStore();
+
 const brushCursorStyle = computed(() => {
+    const { pos } = cursorInfo;
+    const scale = canvasStore.scale;
+    const radius  = (brushStore.lineWidth / 2) * scale;
+
     return {
-        opacity: pos.hidden ? 0 : 1,
-        transform: `translate(${ pos.x }px, ${ pos.y }px)`
+        width: radius * 2  + "px",
+        height: radius * 2 + "px",
+        opacity: cursorInfo.hidden ? 0 : 1,
+        transform: `translate(${ pos.x - radius }px, ${ pos.y - radius }px)`
     };
 });
-
-function hideCursor() {
-    pos.hidden = true;
-}
 
 const paintStart = ref(false);
 
@@ -44,10 +51,10 @@ window.addEventListener("mousedown", e => {
     }
 });
 
-const canvasStore = useCanvasStore();
-const brushStore = useBrushStore();
 
 window.addEventListener("mousemove", e => {
+    cursorInfo.pos.set(e.offsetX, e.offsetY);
+
     if( paintStart.value ) {
         brushStore.drawings.push(
             new Vec(e.offsetX, e.offsetY)
@@ -70,6 +77,15 @@ const layerStore = useLayerStore();
 function resetDrawing() {
     paintStart.value = false;
     brushStore.drawings.length = 0;
+}
+
+function mouseout() {
+    cursorInfo.hidden = true;
+    resetDrawing();
+}
+
+function mouseenter() {
+    cursorInfo.hidden = false;
 }
 
 window.addEventListener("mouseup", resetDrawing);
