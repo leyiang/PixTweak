@@ -33,7 +33,7 @@ export const useToolStore = defineStore('tool-store', {
 
     return {
         tools,
-        currentID: "cursor-tool",
+        currentID: "brush-tool",
     }
   },
 

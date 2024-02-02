@@ -58,3 +58,31 @@ export function cropImage( imageToCrop: CanvasImageSource, sx: number, sy: numbe
 
     return canvas;
 }
+
+export function renderDrawings( drawingPoints, ctx: CanvasRenderingContext2D, scale = 1) {
+    scale = 1 / scale;
+        ctx.beginPath();
+    for(let i = 1; i < drawingPoints.length; i++) {
+        const prev = drawingPoints[i-1];
+        const current = drawingPoints[i];
+
+        if( i === 1 ) {
+            ctx.moveTo( prev.x, prev.y );
+            ctx.lineTo( current.x, current.y );
+        } else {
+            const start = drawingPoints[i-2];
+            const lastX = (start.x + prev.x) / 2;
+            const lastY = (start.y + prev.y) / 2;
+
+            const x = (prev.x + current.x) / 2;
+            const y = (prev.y + current.y) / 2;
+            ctx.moveTo( lastX * scale, lastY * scale );
+            ctx.quadraticCurveTo( prev.x * scale, prev.y * scale, x * scale, y * scale);
+        }
+    }
+
+    ctx.lineCap = 'round';
+    ctx.lineJoin = "round";
+    ctx.lineWidth = 10;
+    ctx.stroke();
+}

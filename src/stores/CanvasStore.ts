@@ -12,6 +12,7 @@ export const useCanvasStore = defineStore('canvas-store', {
       h: 0,
       scale: 1,
 
+      drawings: [],
       resultCanvas: null as null | HTMLCanvasElement
     }
   },
@@ -60,7 +61,9 @@ export const useCanvasStore = defineStore('canvas-store', {
       }
 
       const workStore = useWorkStore();
-      this.scale = getDefaultScale( this.w, this.h, workStore.size );
+
+      // this.scale = getDefaultScale( this.w, this.h, workStore.size );
+      this.scale = 1;
     },
 
     zoomIn( factor = .1) {
@@ -92,6 +95,15 @@ export const useCanvasStore = defineStore('canvas-store', {
       }
 
       downloadCanvas( this.resultCanvas, "save");
+    },
+
+    getEmptyCanvas() {
+        const canvas = document.createElement("canvas");
+
+        canvas.width = this.w;
+        canvas.height = this.h;
+
+        return canvas;
     }
   },
 })

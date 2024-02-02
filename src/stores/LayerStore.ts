@@ -26,14 +26,17 @@ export const useLayerStore = defineStore('layer-store', {
 
     addEmptyLayer() {
         const canvasStore = useCanvasStore();
-        const canvas = document.createElement("canvas");
-        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
-        context.fillStyle = "#000";
-        canvas.width = canvasStore.w;
-        canvas.height = canvasStore.h;
-        context.fillRect(0, 0, canvas.width, canvas.height);
+        const canvas = canvasStore.getEmptyCanvas();
 
         this.addLayer( canvas );
+    },
+
+    addSolidLayer( fill="#FFF" ) {
+        const canvasStore = useCanvasStore();
+        const canvas = canvasStore.getEmptyCanvas();
+        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+        context.fillStyle = fill;
+        context.fillRect(0, 0, canvas.width, canvas.height);
     },
 
     getCurrentLayer() {

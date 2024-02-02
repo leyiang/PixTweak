@@ -106,6 +106,7 @@ const canvasStore = useCanvasStore();
 loadImage( HugeSampleImage ).then( image => {
     layerStore.addLayer(image, "new layer");
     canvasStore.setCanvasSizeBy(image);
+    layerStore.addEmptyLayer();
 });
 
 const shortcut = new KeyboardShortcut();

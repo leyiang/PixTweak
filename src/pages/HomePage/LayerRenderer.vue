@@ -8,6 +8,7 @@ import { useCanvasStore } from "@/stores/CanvasStore";
 import { useLayerStore } from "@/stores/LayerStore";
 import { useWorkStore } from '@/stores/WorkStore';
 import type { SupportImageSource } from '@/types/WorkStoreType';
+import { renderDrawings } from "@/utils";
 import { storeToRefs } from 'pinia';
 import { ref, reactive, computed, watch } from 'vue';
 
@@ -20,7 +21,7 @@ const workStore = useWorkStore();
 
 const canvasStore = useCanvasStore();
 
-const { scale } = storeToRefs(canvasStore);
+const { scale, drawings } = storeToRefs(canvasStore);
 const { layers } = storeToRefs(layerStore);
 
 watch(layers, () => {
@@ -40,6 +41,12 @@ watch(scale,() => {
     }
 
     renderLayers();
+});
+
+watch(drawings, () => {
+    renderLayers();
+}, {
+    deep: true
 });
 
 function renderLayers() {
@@ -66,14 +73,14 @@ function renderLayers() {
     canvas.height = h;
 
     layerStore.layers.forEach(layer => {
-        console.log( layer );
-
         if( layer.visibility ) {
             ctx.drawImage( layer.source, 0, 0, w, h );
         }
     });
 
 
+    renderDrawings( canvasStore.drawings, ctx );
+    
     canvasStore.setResultCanvas( canvas );
     return true;
 }
