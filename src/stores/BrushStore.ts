@@ -8,6 +8,8 @@ export const useBrushStore = defineStore('brush-store', {
             drawings: [] as Vec[],
             lineWidth: 30,
             color: "#FFFFFF",
+
+            resizing: false,
         }
     },
 

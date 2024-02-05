@@ -105,10 +105,14 @@ document.onpaste = (evt) => {
 const layerStore = useLayerStore();
 const canvasStore = useCanvasStore();
 
+
 loadImage( HugeSampleImage ).then( image => {
     layerStore.addLayer(image, "new layer");
     canvasStore.setCanvasSizeBy(image);
-    layerStore.addEmptyLayer();
+
+    // loadImage( SampleImage ).then( image => {
+    //     layerStore.addLayer(image, "new layer");
+    // });
 });
 
 const shortcut = new KeyboardShortcut();
@@ -175,11 +179,10 @@ const cur = {
 let startDragging = false;
 
 const brushStore = useBrushStore();
-const resizeBrush = ref(false);
 
 window.addEventListener("mousedown", e => {
 
-    if( resizeBrush.value || areaDraggingStore.dragging ) {
+    if( brushStore.resizing || areaDraggingStore.dragging ) {
         start.x = e.clientX;
         start.y = e.clientY;
     }
@@ -196,20 +199,20 @@ window.addEventListener("contextmenu", e => {
         start.y = e.clientY;
 
         e.preventDefault();
-        resizeBrush.value = true;
+        brushStore.resizing = true;
         oldSize = brushStore.lineWidth;
     }
 });
 
 window.addEventListener("mousemove", e => {
-    if( resizeBrush.value || areaDraggingStore.dragging ) {
+    if( brushStore.resizing || areaDraggingStore.dragging ) {
         cur.x = e.clientX;
         cur.y = e.clientY;
 
         const dx = cur.x - start.x;
         const dy = cur.y - start.y;
 
-        if( resizeBrush.value ) {
+        if( brushStore.resizing ) {
             console.log(dx);
             
             brushStore.lineWidth = oldSize + dx;
@@ -224,7 +227,7 @@ window.addEventListener("mousemove", e => {
 });
 
 window.addEventListener("mouseup", e => {
-    resizeBrush.value = false;
+    brushStore.resizing = false;
     startDragging = false;
 
     areaDraggingStore.oldOffset.x = areaDraggingStore.moveOffset.x;

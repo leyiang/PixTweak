@@ -2,6 +2,7 @@
     <div class="brush-area"
         @mouseout="mouseout"
         @mouseenter="mouseenter"
+        ref="dArea"
     >
         <div
             class="brush-cursor"
@@ -54,8 +55,13 @@ window.addEventListener("mousedown", e => {
 
 
 window.addEventListener("mousemove", e => {
-    cursorInfo.pos.set(e.offsetX, e.offsetY);
-
+    // While resizing the brush
+    // Stop udpateing position
+    // TODO: using pointer lock
+    if( ! brushStore.resizing ) {
+        cursorInfo.pos.set(e.offsetX, e.offsetY);
+    }
+    
     if( paintStart.value ) {
         brushStore.drawings.push(
             new Vec(e.offsetX, e.offsetY)
