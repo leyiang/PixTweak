@@ -7,10 +7,11 @@
 <script setup lang="ts">
 import { Vec } from '@/core/Vec';
 import { useLayerStore } from '@/stores/LayerStore';
+import { onBeforeUnmount } from 'vue';
 
 const layerStore = useLayerStore();
 
-let selected = false;
+let selected = null;
 
 const start = new Vec();
 
@@ -20,9 +21,10 @@ function mousedown(e: MouseEvent) {
 
     if( layer.isPointInside( point ) ) {
         selected = layer;
-        start.set( e.offsetX, e.offsetY );
 
         oldPos.set( layer.pos.x, layer.pos.y );
+    } else {
+        selected = null;
     }
 }
 
@@ -32,14 +34,19 @@ const oldPos = new Vec();
 
 let isMoving = false;
 
-window.addEventListener("mousedown", e => {
+function myMousedown(e: MouseEvent) {
+    start.set( e.offsetX, e.offsetY );
+
     if( selected !== null ) {
-        isMoving = true;
+        console.log( selected );
+        
+        if( selected.isPointInside(start) ) {
+            isMoving = true;
+        }
     }
+}
 
-});
-
-window.addEventListener("mousemove", e => {
+function myMousemove(e) {
     if( selected && isMoving ) {
 
         current.set( e.offsetX, e.offsetY );
@@ -49,9 +56,18 @@ window.addEventListener("mousemove", e => {
         selected.pos.x = oldPos.x + dx;
         selected.pos.y = oldPos.y + dy;
     }
-});
+}
 
-window.addEventListener("mouseup", e => {
+function myMouseup() {
     isMoving = false;
+}
+window.addEventListener("mousedown", myMousedown);
+window.addEventListener("mousemove", myMousemove);
+window.addEventListener("mouseup", myMouseup);
+
+onBeforeUnmount(() => {
+    window.removeEventListener("mousedown", myMousedown);
+    window.removeEventListener("mousemove", myMousemove);
+    window.removeEventListener("mouseup", myMouseup);
 });
 </script>
