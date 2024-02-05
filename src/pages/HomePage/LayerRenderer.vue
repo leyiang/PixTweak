@@ -7,6 +7,7 @@ import "@/assets/style/components/EditingImageStyle.css"
 import { useBrushStore } from "@/stores/BrushStore";
 import { useCanvasStore } from "@/stores/CanvasStore";
 import { useLayerStore } from "@/stores/LayerStore";
+import { useSelectStore } from "@/stores/SelectStore";
 import { useWorkStore } from '@/stores/WorkStore';
 import type { SupportImageSource } from '@/types/WorkStoreType';
 import { storeToRefs } from 'pinia';
@@ -76,8 +77,7 @@ function renderLayers() {
 
     layerStore.layers.forEach(layer => {
         if( layer.visibility ) {
-            const source = layer.renderLayer();
-            ctx.drawImage( source, 0, 0, w, h );
+            layer.renderLayer( ctx );
         }
     });
 

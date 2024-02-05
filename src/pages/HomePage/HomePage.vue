@@ -30,7 +30,6 @@
 
 <script setup lang="ts">
 import "@/assets/style/pages/HomePageStyle.css";
-import CropTool from "@/tools/CropTool/CropTool.vue";
 import SampleImage from "@/assets/images/sample.png";
 import HugeSampleImage from "@/assets/images/huge_sample.jpg";
 import { loadImage } from "@/utils";
@@ -107,12 +106,12 @@ const canvasStore = useCanvasStore();
 
 
 loadImage( HugeSampleImage ).then( image => {
-    layerStore.addLayer(image, "new layer");
     canvasStore.setCanvasSizeBy(image);
+    layerStore.addLayer(image, "new layer");
 
-    // loadImage( SampleImage ).then( image => {
-    //     layerStore.addLayer(image, "new layer");
-    // });
+    loadImage( SampleImage ).then( image => {
+        layerStore.addLayer(image, "new layer");
+    });
 });
 
 const shortcut = new KeyboardShortcut();

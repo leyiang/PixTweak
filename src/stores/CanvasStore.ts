@@ -2,7 +2,7 @@ import type { SupportImageSource, WorkSize } from '@/types/WorkStoreType'
 import { defineStore } from 'pinia'
 import { useWorkStore } from './WorkStore';
 import { markRaw } from 'vue';
-import { downloadCanvas } from '@/utils';
+import { downloadCanvas, getNewCanvas } from '@/utils';
 
 export const useCanvasStore = defineStore('canvas-store', {
   state: () => {
@@ -96,12 +96,7 @@ export const useCanvasStore = defineStore('canvas-store', {
     },
 
     getEmptyCanvas() {
-        const canvas = document.createElement("canvas");
-
-        canvas.width = this.w;
-        canvas.height = this.h;
-
-        return canvas;
+      return getNewCanvas( this.w, this.h );
     }
   },
 })

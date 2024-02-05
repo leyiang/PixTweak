@@ -34,3 +34,8 @@ html, #app, .app-wrap {
 .tool-header {
     height: 30px;
 }
+
+.interact-area {
+    position: absolute;
+    inset: 0;
+}

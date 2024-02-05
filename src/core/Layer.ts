@@ -1,5 +1,7 @@
+import { useCanvasStore } from "@/stores/CanvasStore";
 import type { SupportImageSource } from "@/types/WorkStoreType";
 import { getNewCanvas } from "@/utils";
+import { Vec } from "./Vec";
 
 export class Layer {
     visibility: boolean;
@@ -8,8 +10,11 @@ export class Layer {
     paintOnMask: boolean;
     showMask: boolean;
     mask: null | HTMLCanvasElement;
+    canvas: HTMLCanvasElement;
+    context: CanvasRenderingContext2D;
+    pos: Vec;
 
-    constructor(name: string, source: SupportImageSource) {
+    constructor(name: string, source: SupportImageSource, canvas: HTMLCanvasElement) {
         this.name = name;
         this.visibility = true;
         this.source = this.formatSource( source );
@@ -17,6 +22,10 @@ export class Layer {
         this.mask = null;
         this.showMask = false;
         this.paintOnMask = false;
+        this.canvas = canvas;
+        this.context = this.canvas.getContext("2d") as CanvasRenderingContext2D;
+
+        this.pos = new Vec();
     }
 
     formatSource( source: SupportImageSource ) : HTMLCanvasElement {
@@ -70,9 +79,16 @@ export class Layer {
         this.mask = canvas;
     }
 
-    renderLayer() : HTMLCanvasElement {
+    // render Layer on context
+    renderLayer( layerContext: CanvasRenderingContext2D ) {
+        const store = useCanvasStore();
+        const {x, y} = this.pos;
+        const w = this.source.width * store.scale;
+        const h = this.source.height * store.scale;
+
         if( this.mask === null ) {
-            return this.source;
+
+            layerContext.drawImage( this.source, x, y, w, h);
         } else {
             // apply mask
             const { canvas, context } = getNewCanvas(this.source.width, this.source.height);
@@ -91,7 +107,15 @@ export class Layer {
             context.drawImage( this.mask, 0, 0 );
             context.globalCompositeOperation = "source-over";
 
-            return canvas;
+            layerContext.drawImage( canvas, x, y, w, h );
         }
+    }
+
+
+    isPointInside( point: Vec ) {
+        return point.x >= this.pos.x
+            && point.y >= this.pos.y
+            && point.x <= this.source.width + this.pos.x
+            && point.y <= this.source.height + this.pos.y;
     }
 }

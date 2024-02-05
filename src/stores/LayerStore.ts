@@ -13,8 +13,11 @@ export const useLayerStore = defineStore('layer-store', {
 
   actions: {
     addLayer(source: SupportImageSource, name = "no-name") {
+        const canvasStore = useCanvasStore();
+        const { canvas } = canvasStore.getEmptyCanvas();
+
         this.layers.push(
-            new Layer(name, source)
+            new Layer(name, source, canvas)
         );
 
         this.switchCurrentLayer( this.layers.length - 1 );
@@ -22,15 +25,15 @@ export const useLayerStore = defineStore('layer-store', {
 
     addEmptyLayer() {
         const canvasStore = useCanvasStore();
-        const canvas = canvasStore.getEmptyCanvas();
+        const { canvas } = canvasStore.getEmptyCanvas();
 
         this.addLayer( canvas );
     },
 
     addSolidLayer( fill="#FFF" ) {
         const canvasStore = useCanvasStore();
-        const canvas = canvasStore.getEmptyCanvas();
-        const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+        const { canvas, context } = canvasStore.getEmptyCanvas();
+
         context.fillStyle = fill;
         context.fillRect(0, 0, canvas.width, canvas.height);
     },
