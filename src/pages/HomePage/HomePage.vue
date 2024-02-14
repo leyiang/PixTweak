@@ -97,7 +97,7 @@ document.onpaste = (evt) => {
     const url = URL.createObjectURL(file);
 
     loadImage( url ).then(image => {
-        workStore.setImage( image );
+        layerStore.addLayer(image, "new year");
     });
 };
 
@@ -105,13 +105,13 @@ const layerStore = useLayerStore();
 const canvasStore = useCanvasStore();
 
 
-loadImage( HugeSampleImage ).then( image => {
+loadImage( SampleImage ).then( image => {
     canvasStore.setCanvasSizeBy(image);
     layerStore.addLayer(image, "new layer");
 
-    loadImage( SampleImage ).then( image => {
-        layerStore.addLayer(image, "new layer");
-    });
+    // loadImage( SampleImage ).then( image => {
+    //     layerStore.addLayer(image, "new layer");
+    // });
 });
 
 const shortcut = new KeyboardShortcut();

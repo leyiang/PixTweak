@@ -13,9 +13,7 @@ export const useSelectStore = defineStore('select-store', {
   actions: {
     mousedown(e: MouseEvent) {
         const toolStore = useToolStore();
-
         console.log( toolStore.currentTool );
-
     }
   },
 })

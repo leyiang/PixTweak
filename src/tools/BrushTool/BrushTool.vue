@@ -13,6 +13,7 @@
 
 <script setup lang="ts">
 import "@/assets/style/tools/BrushToolStyle.css"
+import { mouseState } from "@/core/MouseState";
 import { Vec } from "@/core/Vec";
 import { useBrushStore } from "@/stores/BrushStore";
 import { useCanvasStore } from "@/stores/CanvasStore";
@@ -42,19 +43,14 @@ const brushCursorStyle = computed(() => {
 
 const paintStart = ref(false);
 
-window.addEventListener("mousedown", e => {
-    if( ! (e.target instanceof HTMLElement) ) {
-        return;
-    }
-
+mouseState.onMouseDown(e => {
     // Only left click can draw
-    if( e.target.classList.contains("brush-area") && e.buttons === 1 ) {
+    if( e.buttons === 1 ) {
         paintStart.value = true;
     }
-});
+}, ".brush-area");
 
-
-window.addEventListener("mousemove", e => {
+mouseState.onMouseMove( e => {
     // While resizing the brush
     // Stop udpateing position
     // TODO: using pointer lock
@@ -63,16 +59,18 @@ window.addEventListener("mousemove", e => {
     }
     
     if( paintStart.value ) {
-        brushStore.drawings.push(
-            new Vec(e.offsetX, e.offsetY)
-        );
-
         const layer = layerStore.getCurrentLayer();
         const ctx = layer.getContext();;
+
+        brushStore.drawings.push(
+            new Vec(e.offsetX - layer.pos.x, e.offsetY - layer.pos.y)
+        );
 
         brushStore.renderDrawings( ctx, layer.paintOnMask );
     }
 });
+
+mouseState.onMouseUp( resetDrawing );
 
 const layerStore = useLayerStore();
 
@@ -89,6 +87,4 @@ function mouseout() {
 function mouseenter() {
     cursorInfo.hidden = false;
 }
-
-window.addEventListener("mouseup", resetDrawing);
 </script>

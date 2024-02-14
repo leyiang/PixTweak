@@ -7,7 +7,6 @@
 
             <div
                 class="crop-area"
-                ref="dCropArea"
                 :style="cropAreaStyle"
                 v-show="! areaDraggingStore.dragging"
             >
@@ -25,6 +24,7 @@
 
 <script setup lang="ts">
 import "@/assets/style/tools/CropToolStyle.css"
+import { mouseState } from "@/core/MouseState";
 import { useCanvasStore } from "@/stores/CanvasStore";
 import { useCropStore } from "@/stores/CropStore";
 import { useWorkAreaDraggingStore } from "@/stores/WorkAreaDraggingStore";
@@ -35,7 +35,6 @@ import { computed, reactive, ref, watch } from "vue";
 const canvasStore = useCanvasStore();
 const cropStore = useCropStore();
 const workStore = useWorkStore();
-const dCropArea = ref(null);
 
 const { editingImage } = storeToRefs(workStore);
 const areaDraggingStore = useWorkAreaDraggingStore();
@@ -48,14 +47,6 @@ document.addEventListener("keydown", e => {
     if( e.key === "Enter" ) {
         cropStore.crop(); 
     }
-});
-
-const mouseInfo = reactive({
-    startX: 0,
-    startY: 0,
-
-    currentX: 0,
-    currentY: 0,
 });
 
 const imgCropperClass = computed(() => {
@@ -89,119 +80,106 @@ function resetMouse(e: MouseEvent) {
     cropStore.oldRect.h = cropStore.rect.h;
 }
 
-window.addEventListener("mouseup", resetMouse);
-window.addEventListener("mousemove", mousemove);
-window.addEventListener("mousedown", mousedown);
+mouseState.onMouseUp( resetMouse );
+mouseState.onMouseDown((e: MouseEvent) => {
+    cropStore.isMoving = true;
 
-function mousedown(e: MouseEvent) {
+    cropStore.oldRect.x = cropStore.rect.x;
+    cropStore.oldRect.y = cropStore.rect.y;
+}, ".crop-area" );
 
-    if (e.target === dCropArea.value) {
-        mouseInfo.startX = e.clientX;
-        mouseInfo.startY = e.clientY;
 
-        cropStore.isMoving = true;
+mouseState.onMouseDown((e: MouseEvent) => {
+    // This is sure checked inside mouseState
+    const target = e.target as Element;
 
-        cropStore.oldRect.x = cropStore.rect.x;
-        cropStore.oldRect.y = cropStore.rect.y;
+    cropStore.isResizing = true;
 
-        return;
+    cropStore.oldRect.w = cropStore.rect.w;
+    cropStore.oldRect.h = cropStore.rect.h;
+
+    cropStore.oldRect.x = cropStore.rect.x;
+    cropStore.oldRect.y = cropStore.rect.y;
+
+    if (target.classList.contains("handle-left")) {
+        cropStore.resizing.left = true;
     }
 
-    const { target } = e;
+    if (target.classList.contains("handle-right")) {
+        cropStore.resizing.right = true;
+    }
 
-    if (target instanceof HTMLElement && target.classList.contains("crop-handle")) {
-        mouseInfo.startX = e.clientX;
-        mouseInfo.startY = e.clientY;
+    if (target.classList.contains("handle-top")) {
+        cropStore.resizing.top = true;
+    }
 
-        cropStore.isResizing = true;
+    if (target.classList.contains("handle-bottom")) {
+        cropStore.resizing.bottom = true;
+    }
+}, ".crop-handle");
 
-        cropStore.oldRect.w = cropStore.rect.w;
-        cropStore.oldRect.h = cropStore.rect.h;
+// Moveing Crop Area
+mouseState.onMouseMove((e, dx, dy) => {
+    console.log(dx, dy );
+    
+    dx /= canvasStore.scale;
+    dy /= canvasStore.scale;
 
-        cropStore.oldRect.x = cropStore.rect.x;
-        cropStore.oldRect.y = cropStore.rect.y;
+    cropStore.rect.x = cropStore.oldRect.x + dx;
 
-        if (target.classList.contains("handle-left")) {
-            cropStore.resizing.left = true;
-        }
+    if (cropStore.rect.x < 0) cropStore.rect.x = 0;
+    if (cropStore.rect.x + cropStore.rect.w > canvasStore.w) {
+        cropStore.rect.x = canvasStore.w - cropStore.rect.w;
+    }
 
-        if (target.classList.contains("handle-right")) {
-            cropStore.resizing.right = true;
-        }
+    cropStore.rect.y = cropStore.oldRect.y + dy;
 
-        if (target.classList.contains("handle-top")) {
-            cropStore.resizing.top = true;
-        }
+    if (cropStore.rect.y < 0) cropStore.rect.y = 0;
+    if (cropStore.rect.y + cropStore.rect.h > canvasStore.h) {
+        cropStore.rect.y = canvasStore.h - cropStore.rect.h;
+    }
+}, () => cropStore.isMoving);
 
-        if (target.classList.contains("handle-bottom")) {
-            cropStore.resizing.bottom = true;
+
+// Resizing Crop Area
+mouseState.onMouseMove((e, dx, dy) => {
+    dx /= canvasStore.scale;
+    dy /= canvasStore.scale;
+
+    if (cropStore.resizing.left) {
+        cropStore.rect.x = cropStore.oldRect.x + dx;
+        cropStore.rect.w = cropStore.oldRect.w - dx;
+
+        if (cropStore.rect.x < 0) {
+            let offset = cropStore.rect.x;
+            cropStore.rect.x = 0;
+            cropStore.rect.w += offset;
         }
     }
-}
 
-function mousemove(e: MouseEvent) {
-    if (cropStore.isMoving || cropStore.isResizing) {
-        mouseInfo.currentX = e.clientX;
-        mouseInfo.currentY = e.clientY;
-
-        console.log( canvasStore.scale, canvasStore.w );
-        
-        const dx = (mouseInfo.currentX - mouseInfo.startX) / canvasStore.scale;
-        const dy = (mouseInfo.currentY - mouseInfo.startY) / canvasStore.scale;
-
-        if (cropStore.isMoving) {
-            cropStore.rect.x = cropStore.oldRect.x + dx;
-
-            if (cropStore.rect.x < 0) cropStore.rect.x = 0;
-            if (cropStore.rect.x + cropStore.rect.w > canvasStore.w) {
-                cropStore.rect.x = canvasStore.w - cropStore.rect.w;
-            }
-
-            cropStore.rect.y = cropStore.oldRect.y + dy;
-
-            if (cropStore.rect.y < 0) cropStore.rect.y = 0;
-            if (cropStore.rect.y + cropStore.rect.h > canvasStore.h) {
-                cropStore.rect.y = canvasStore.h - cropStore.rect.h;
-            }
-        }
-
-        if (cropStore.isResizing) {
-            if (cropStore.resizing.left) {
-                cropStore.rect.x = cropStore.oldRect.x + dx;
-                cropStore.rect.w = cropStore.oldRect.w - dx;
-
-                if (cropStore.rect.x < 0) {
-                    let offset = cropStore.rect.x;
-                    cropStore.rect.x = 0;
-                    cropStore.rect.w += offset;
-                }
-            }
-
-            if (cropStore.resizing.right) {
-                cropStore.rect.w = cropStore.oldRect.w + dx;
-                if (cropStore.rect.w + cropStore.rect.x > canvasStore.w) {
-                    cropStore.rect.w = canvasStore.w - cropStore.rect.x;
-                }
-            }
-
-            if (cropStore.resizing.bottom) {
-                cropStore.rect.h = cropStore.oldRect.h + dy;
-                if (cropStore.rect.h + cropStore.rect.y > canvasStore.h) {
-                    cropStore.rect.h = canvasStore.h - cropStore.rect.y;
-                }
-            }
-
-            if (cropStore.resizing.top) {
-                cropStore.rect.y = cropStore.oldRect.y + dy;
-                cropStore.rect.h = cropStore.oldRect.h - dy;
-
-                if (cropStore.rect.y < 0) {
-                    let offset = cropStore.rect.y;
-                    cropStore.rect.y = 0;
-                    cropStore.rect.h += offset;
-                }
-            }
+    if (cropStore.resizing.right) {
+        cropStore.rect.w = cropStore.oldRect.w + dx;
+        if (cropStore.rect.w + cropStore.rect.x > canvasStore.w) {
+            cropStore.rect.w = canvasStore.w - cropStore.rect.x;
         }
     }
-}
+
+    if (cropStore.resizing.bottom) {
+        cropStore.rect.h = cropStore.oldRect.h + dy;
+        if (cropStore.rect.h + cropStore.rect.y > canvasStore.h) {
+            cropStore.rect.h = canvasStore.h - cropStore.rect.y;
+        }
+    }
+
+    if (cropStore.resizing.top) {
+        cropStore.rect.y = cropStore.oldRect.y + dy;
+        cropStore.rect.h = cropStore.oldRect.h - dy;
+
+        if (cropStore.rect.y < 0) {
+            let offset = cropStore.rect.y;
+            cropStore.rect.y = 0;
+            cropStore.rect.h += offset;
+        }
+    }
+}, () => cropStore.isResizing);
 </script>

@@ -5,15 +5,15 @@
 </template>
 
 <script setup lang="ts">
+import type { Layer } from '@/core/Layer';
+import { mouseState } from '@/core/MouseState';
 import { Vec } from '@/core/Vec';
 import { useLayerStore } from '@/stores/LayerStore';
 import { onBeforeUnmount } from 'vue';
 
 const layerStore = useLayerStore();
 
-let selected = null;
-
-const start = new Vec();
+let selected = null as null | Layer;
 
 function mousedown(e: MouseEvent) {
     const layer = layerStore.getCurrentLayer();
@@ -28,46 +28,32 @@ function mousedown(e: MouseEvent) {
     }
 }
 
-const current = new Vec();
-
 const oldPos = new Vec();
-
 let isMoving = false;
 
-function myMousedown(e: MouseEvent) {
-    start.set( e.offsetX, e.offsetY );
+let cleanupMouseDown = mouseState.onMouseDown((e) => {
+    if( selected === null ) return;
 
-    if( selected !== null ) {
-        console.log( selected );
-        
-        if( selected.isPointInside(start) ) {
-            isMoving = true;
-        }
+    const mouse = new Vec(e.offsetX, e.offsetY);
+    if( selected.isPointInside( mouse ) ) {
+        isMoving = true;
     }
-}
+});
 
-function myMousemove(e) {
+let cleanupMouseMove = mouseState.onMouseMove((e, dx, dy) => {
     if( selected && isMoving ) {
-
-        current.set( e.offsetX, e.offsetY );
-        const dx = current.x - start.x;
-        const dy = current.y - start.y;
-
         selected.pos.x = oldPos.x + dx;
         selected.pos.y = oldPos.y + dy;
     }
-}
+});
 
-function myMouseup() {
+const cleanupMouseUp = mouseState.onMouseUp(() => {
     isMoving = false;
-}
-window.addEventListener("mousedown", myMousedown);
-window.addEventListener("mousemove", myMousemove);
-window.addEventListener("mouseup", myMouseup);
+});
 
 onBeforeUnmount(() => {
-    window.removeEventListener("mousedown", myMousedown);
-    window.removeEventListener("mousemove", myMousemove);
-    window.removeEventListener("mouseup", myMouseup);
+    cleanupMouseDown();
+    cleanupMouseMove();
+    cleanupMouseUp();
 });
 </script>
