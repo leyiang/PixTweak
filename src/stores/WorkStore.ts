@@ -1,7 +1,7 @@
 // stores/counter.js
 import type { ImgInfo, SupportImageSource, WorkSize } from '@/types/WorkStoreType';
 import { defineStore } from 'pinia'
-import { useWorkAreaDraggingStore } from './WorkAreaDraggingStore';
+import { usePanStore } from './PanStore';
 
 export const useWorkStore = defineStore('work-store', {
   state: () => {
@@ -64,11 +64,11 @@ export const useWorkStore = defineStore('work-store', {
     },
 
     setEditingImage(image: SupportImageSource) {
-      const areaDraggingStore = useWorkAreaDraggingStore();
+      const panStore = usePanStore();
 
       this.editingImage = image;
-      this.setDefaultScale();
-      areaDraggingStore.resetMoveOffset();
+      // this.setDefaultScale();
+      panStore.resetMoveOffset();
     },
 
     useOriginalImage() {

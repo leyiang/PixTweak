@@ -2,13 +2,13 @@
         <div class="image-cropper" :class="imgCropperClass">
             <div
                 class="image-mask"
-                v-show="! areaDraggingStore.dragging"
+                v-show="! panStore.dragging"
             ></div>
 
             <div
                 class="crop-area"
                 :style="cropAreaStyle"
-                v-show="! areaDraggingStore.dragging"
+                v-show="! panStore.dragging"
             >
                 <div class="crop-handle handle-top handle-left"></div>
                 <div class="crop-handle handle-top handle-hmid"></div>
@@ -27,7 +27,7 @@ import "@/assets/style/tools/CropToolStyle.css"
 import { mouseState } from "@/core/MouseState";
 import { useCanvasStore } from "@/stores/CanvasStore";
 import { useCropStore } from "@/stores/CropStore";
-import { useWorkAreaDraggingStore } from "@/stores/WorkAreaDraggingStore";
+import { usePanStore } from "@/stores/PanStore";
 import { useWorkStore } from "@/stores/WorkStore";
 import { storeToRefs } from "pinia";
 import { computed, reactive, ref, watch } from "vue";
@@ -37,7 +37,7 @@ const cropStore = useCropStore();
 const workStore = useWorkStore();
 
 const { editingImage } = storeToRefs(workStore);
-const areaDraggingStore = useWorkAreaDraggingStore();
+const panStore = usePanStore();
 
 // watch(editingImage, () => {
 //     cropStore.updateCropInfo();

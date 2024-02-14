@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-export const useWorkAreaDraggingStore = defineStore('work-area-dragging', {
+export const usePanStore = defineStore('work-area-dragging', {
   state: () => {
 
     return {

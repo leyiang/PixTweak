@@ -7,7 +7,7 @@
         <main
             ref="dWorkWrap"
             class="work-wrap"
-            :class="{dragging: areaDraggingStore.dragging}"
+            :class="{dragging: panStore.dragging}"
         >
             <div
                 class="working-area"
@@ -38,7 +38,6 @@ import { computed, onMounted, ref } from "vue";
 import { useWorkStore } from "@/stores/WorkStore";
 import { KeyboardShortcut } from "@/core/KeyboardShortcut";
 import { KeyboardState, PRESSED } from "@/core/KeyboardState";
-import { useWorkAreaDraggingStore } from "@/stores/WorkAreaDraggingStore";
 import { useToolStore } from "@/stores/ToolStore";
 import ToolList from "@/components/ToolList.vue";
 import LayerSelector from "@/components/LayerSelector.vue";
@@ -47,15 +46,16 @@ import { useLayerStore } from "@/stores/LayerStore";
 import { useCanvasStore } from "@/stores/CanvasStore";
 import { useBrushStore } from "@/stores/BrushStore";
 import BrushTool from "@/tools/BrushTool/BrushTool.vue";
+import { usePanStore } from "@/stores/PanStore";
 
 const toolStore = useToolStore();
 const workStore = useWorkStore();
-const areaDraggingStore = useWorkAreaDraggingStore();
+const panStore = usePanStore();
 const dWorkWrap = ref<HTMLElement | null>(null);
 
 const workAreaStyle = computed(() => {
     return {
-        transform: `translate(${ areaDraggingStore.moveOffset.x }px, ${ areaDraggingStore.moveOffset.y }px)`
+        transform: `translate(${ panStore.moveOffset.x }px, ${ panStore.moveOffset.y }px)`
     }
 });
 
@@ -119,9 +119,9 @@ const keyState = new KeyboardState();
 
 keyState.addMapping(" ", (state: number) => {
     if( state === PRESSED ) {
-        areaDraggingStore.dragging = true;
+        panStore.dragging = true;
     } else {
-        areaDraggingStore.dragging = false;
+        panStore.dragging = false;
     }
 });
 
@@ -181,12 +181,12 @@ const brushStore = useBrushStore();
 
 window.addEventListener("mousedown", e => {
 
-    if( brushStore.resizing || areaDraggingStore.dragging ) {
+    if( brushStore.resizing || panStore.dragging ) {
         start.x = e.clientX;
         start.y = e.clientY;
     }
 
-    if( areaDraggingStore.dragging ) {
+    if( panStore.dragging ) {
         startDragging = true;
     }
 });
@@ -204,7 +204,7 @@ window.addEventListener("contextmenu", e => {
 });
 
 window.addEventListener("mousemove", e => {
-    if( brushStore.resizing || areaDraggingStore.dragging ) {
+    if( brushStore.resizing || panStore.dragging ) {
         cur.x = e.clientX;
         cur.y = e.clientY;
 
@@ -217,9 +217,9 @@ window.addEventListener("mousemove", e => {
             brushStore.lineWidth = oldSize + dx;
         }
 
-        if( areaDraggingStore.dragging && startDragging ) {
-            areaDraggingStore.moveOffset.x = areaDraggingStore.oldOffset.x + dx;
-            areaDraggingStore.moveOffset.y = areaDraggingStore.oldOffset.y + dy;
+        if( panStore.dragging && startDragging ) {
+            panStore.moveOffset.x = panStore.oldOffset.x + dx;
+            panStore.moveOffset.y = panStore.oldOffset.y + dy;
         }
     }
 
@@ -229,8 +229,8 @@ window.addEventListener("mouseup", e => {
     brushStore.resizing = false;
     startDragging = false;
 
-    areaDraggingStore.oldOffset.x = areaDraggingStore.moveOffset.x;
-    areaDraggingStore.oldOffset.y = areaDraggingStore.moveOffset.y;
+    panStore.oldOffset.x = panStore.moveOffset.x;
+    panStore.oldOffset.y = panStore.moveOffset.y;
 });
 
 
