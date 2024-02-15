@@ -81,10 +81,12 @@
     inset: 0;
     position: absolute;
     border-radius: 8px;
+    pointer-events: none;
 }
 
 .layer-item.drag-over::before {
     animation: drop-zone 1s ease-in-out infinite;
+    pointer-events: none;
 }
 
 .layer-item.drag-over::after {
