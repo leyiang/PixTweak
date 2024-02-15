@@ -18,10 +18,14 @@
         >
 
         <div
-            class="layer-preview"
             :class="{selected: ! layer.paintOnMask}"
+            :style="previewSize"
             @click="layer.paintOnMask = false"
-        ></div>
+
+            class="layer-preview"
+        >
+            <canvas ref="previewCanvas"></canvas>
+        </div>
 
         <span>{{ layer.name }}</span>
 
@@ -37,12 +41,69 @@
 
 <script setup lang="ts">
 import { Layer } from '@/core/Layer';
+import { useBrushStore } from '@/stores/BrushStore';
+import { useCanvasStore } from '@/stores/CanvasStore';
 import { useLayerStore } from '@/stores/LayerStore';
-import { ref } from 'vue';
+import { storeToRefs } from 'pinia';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const layerStore = useLayerStore();
+const canvasStore = useCanvasStore();
+const brushStore = useBrushStore();
+const { drawings } = storeToRefs( brushStore )
+
+const previewCanvas = ref<null | HTMLCanvasElement>(null);
+let previewCtx = null as null | CanvasRenderingContext2D;
+
 const props = defineProps({
     layer: { type: Layer, required: true }
+});
+
+watch(drawings, () => {
+    drawPreview();
+}, {
+    deep: true
+});
+// watch(props.layer, () => {
+//     console.log( props.layer );
+// });
+
+function drawPreview() {
+    if( previewCanvas.value === null ) return;
+
+    if( previewCtx === null ) {
+        previewCtx = previewCanvas.value.getContext("2d");
+    }
+
+    if( previewCtx === null ) {
+        // previewCanvas called getContext with 'webgl' somewhere else
+        // Error
+        throw new Error("Wrong context see here");
+    }
+
+    const scale = props.layer.source.width / DEFAULT_PREVIEW_WIDTH;
+    props.layer.renderLayer( previewCtx, 1 / scale );
+}
+
+onMounted(() => {
+    if( previewCanvas.value === null ) {
+        return;
+    }
+
+    previewCanvas.value.width = DEFAULT_PREVIEW_WIDTH;
+    previewCanvas.value.height = DEFAULT_PREVIEW_WIDTH * (canvasStore.h / canvasStore.w);
+    drawPreview();
+});
+
+const DEFAULT_PREVIEW_WIDTH = 40;
+
+const previewSize = computed(() => {
+    const h = DEFAULT_PREVIEW_WIDTH * (canvasStore.h / canvasStore.w);
+
+    return {
+        width: DEFAULT_PREVIEW_WIDTH + "px",
+        height: h + "px",
+    }
 });
 
 const dragging = ref(false);

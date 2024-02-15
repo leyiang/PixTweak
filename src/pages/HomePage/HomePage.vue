@@ -105,7 +105,7 @@ const layerStore = useLayerStore();
 const canvasStore = useCanvasStore();
 
 
-loadImage( SampleImage ).then( image => {
+loadImage( HugeSampleImage ).then( image => {
     canvasStore.setCanvasSizeBy(image);
     layerStore.addLayer(image, "new layer");
 

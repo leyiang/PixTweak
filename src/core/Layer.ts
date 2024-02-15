@@ -98,11 +98,10 @@ export class Layer {
     }
 
     // render Layer on context
-    renderLayer( layerContext: CanvasRenderingContext2D ) {
-        const store = useCanvasStore();
+    renderLayer( layerContext: CanvasRenderingContext2D, scale: number ) {
         const {x, y} = this.pos;
-        const w = this.source.width * store.scale;
-        const h = this.source.height * store.scale;
+        const w = this.source.width * scale;
+        const h = this.source.height * scale;
 
         if( this.mask === null ) {
 

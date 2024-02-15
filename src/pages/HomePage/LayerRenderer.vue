@@ -77,7 +77,7 @@ function renderLayers() {
 
     layerStore.layers.forEach(layer => {
         if( layer.visibility ) {
-            layer.renderLayer( ctx );
+            layer.renderLayer( ctx, canvasStore.scale);
         }
     });
 

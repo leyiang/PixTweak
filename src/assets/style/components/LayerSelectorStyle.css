@@ -30,10 +30,11 @@
 
 .layer-preview {
     width: 40px;
-    height: 20px;
-    background: #FFF;
-    border: 1px solid #000;
     margin-right: .5rem;
+
+    color: #DDD;
+    background-image: conic-gradient(currentColor 0 25%, transparent 0 50%, currentColor 0 75%, transparent 0);
+    background-size: 16px 16px;
 }
 
 .layer-item.selected {
@@ -56,11 +57,6 @@
     background: #FFF;
     border: 1px solid #000;
     margin-right: .5rem;
-}
-
-.layer-preview.selected,
-.mask-preview.selected {
-    outline: 2px solid red;
 }
 
 .layer-item {
