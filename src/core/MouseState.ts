@@ -47,6 +47,11 @@ class MouseState {
         });
     }
 
+    /**
+     * Multiple places utilize dx, dy from mouseState
+     * as long as user only do one operation at a time, we're fine
+     * @param e 
+     */
     #mousemove(e: MouseEvent) {
         this.mousemoveRegistration.forEach( info => {
             let triggerCallback = this.#checkTrigger(info.on, e);
@@ -63,7 +68,8 @@ class MouseState {
 
     #mouseup(e: MouseEvent) {
         this.startPos.set(0, 0);
-        this.startPos.set(0, 0);
+        this.currentPos.set(0, 0);
+
         this.mouseupRegistration.forEach( info => {
             let triggerCallback = this.#checkTrigger(info.on, e);
 
@@ -100,30 +106,28 @@ class MouseState {
         return false;
     }
 
-    onMouseUp( callback: mouseCallback, on = null as registration["on"] ) : Function {
-        const ref = {
-            on, callback
-        };
+    /**
+     * on has 3 types
+     * null: perform callback every time when event triggerd
+     * function: perform callback if the on function returns true
+     * string: (class name) or id, perform callback if event target matches string selector
+     */
+    #register( callback: mouseCallback, on = null as registration["on"], where: registration[] ) {
+        const ref = { on, callback };
+        where.push( ref );
+        return () => this.removeRef( ref, where );
+    }
 
-        this.mouseupRegistration.push( ref );
-        return () => this.removeRef( ref, this.mouseupRegistration );
+    onMouseUp( callback: mouseCallback, on = null as registration["on"] ) : Function {
+        return this.#register( callback, on, this.mouseupRegistration );
     }
 
     onMouseMove( callback: mouseMoveCallback, on = null as registration["on"] ) : Function {
-        const ref = {
-            on, callback
-        };
-        this.mousemoveRegistration.push( ref );
-        return () => this.removeRef( ref, this.mousemoveRegistration );
+        return this.#register( callback, on, this.mousemoveRegistration );
     }
 
     onMouseDown( callback: mouseCallback, on = null as registration["on"] ) : Function {
-        const ref = {
-            on, callback
-        };
-
-        this.mousedownRegistration.push( ref );
-        return () => this.removeRef( ref, this.mousedownRegistration );
+        return this.#register( callback, on, this.mousedownRegistration );
     }
 
     /**
