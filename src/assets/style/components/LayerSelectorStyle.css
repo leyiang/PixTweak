@@ -19,9 +19,8 @@
     padding: 1rem;
     display: flex;
     align-items: center;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #000;
 }
-
 
 .visibility-toggler {
     width: 20px;
@@ -38,7 +37,7 @@
 }
 
 .layer-item.selected {
-    background: skyblue;
+    background: rgba(0, 0, 0, .1);
 }
 
 .layer-actions {
@@ -62,4 +61,39 @@
 .layer-preview.selected,
 .mask-preview.selected {
     outline: 2px solid red;
+}
+
+.layer-item {
+    position: relative;
+}
+
+.layer-item.drag {
+    opacity: .5;
+}
+
+@keyframes drop-zone {
+    from { box-shadow: 0 0 0 0 #4263eb }
+    to   { box-shadow: 0 0 0 15px #0000 }
+}
+
+.layer-item::before {
+    content: '';
+    inset: 0;
+    position: absolute;
+    border-radius: 8px;
+}
+
+.layer-item.drag-over::before {
+    animation: drop-zone 1s ease-in-out infinite;
+}
+
+.layer-item.drag-over::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 4px dashed #4263eb;
+}
+
+.list-move {
+  transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
 }

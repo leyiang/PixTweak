@@ -8,11 +8,13 @@ export const useLayerStore = defineStore('layer-store', {
     return {
         layers: [] as Layer[],
         currentLayerIndex: 0,
+
+        currentDraggingID: null as null | number,
     }
   },
 
   actions: {
-    addLayer(source: SupportImageSource, name = "no-name") {
+    addLayer(source: SupportImageSource, name = null) {
         const canvasStore = useCanvasStore();
         const { canvas } = canvasStore.getEmptyCanvas();
 
@@ -48,6 +50,29 @@ export const useLayerStore = defineStore('layer-store', {
 
     hasLayer() {
         return this.layers.length > 0;
+    },
+
+    setCurrentDragging(id: number | null) {
+        this.currentDraggingID = id;
+    },
+
+    getLayerIndexByID( id: number ) {
+        return this.layers.findIndex(layer => layer.id === id);
+    },
+
+    /*
+     * Time Complexity: O(2N), N is the length of layers
+     * TODO: fix it.
+     */
+    swapLayer(id1: number, id2: number) {
+        const index1 = this.getLayerIndexByID( id1 );
+        const index2 = this.getLayerIndexByID( id2 );
+
+        if( index1 === -1  || index2 === -1 ) return;
+
+        const tmp = this.layers[index1];
+        this.layers[index1] = this.layers[index2];
+        this.layers[index2] = tmp;
     }
   },
 })

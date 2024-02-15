@@ -2,33 +2,15 @@
     <div class="layer-selector">
         <template v-if="layerStore.hasLayer()">
             <div class="layer-list">
-                <div
-                    v-for="(layer, index) in layerStore.layers"
-                    class="layer-item"
-                    :class="{selected: layerStore.currentLayerIndex === index}"
-                    @click.self="layerStore.switchCurrentLayer(index)"
-                >
-                    <input
-                        v-model="layer.visibility"
-                        type="checkbox"
-                        class="visibility-toggler"
-                    >
-
-                    <div
-                        class="layer-preview"
-                        :class="{selected: ! layer.paintOnMask}"
-                        @click="layer.paintOnMask = false"
-                    ></div>
-                    <span>{{ layer.name }}</span>
-
-                    <div
-                        v-if="layer.mask !== null"
-                        class="mask-preview"
-                        :class="{selected: layer.paintOnMask}"
-                        @click="layer.paintOnMask = true"
-                    >
-                    </div>
-                </div>
+                <TransitionGroup name="list">
+                    <LayerItem
+                        v-for="(layer, index) in layerStore.layers"
+                        :key="layer.id"
+                        :layer="layer"
+                        :class="{selected: layerStore.currentLayerIndex === index}"
+                        @click.self="layerStore.switchCurrentLayer(index)"
+                    />
+                </TransitionGroup>
             </div>
         </template>
 
@@ -57,6 +39,7 @@ import "@/assets/style/components/LayerSelectorStyle.css"
 import { useLayerStore } from "@/stores/LayerStore";
 import { computed } from "vue";
 import { Icon } from "@iconify/vue";
+import LayerItem from "./LayerItem.vue";
 
 const layerStore = useLayerStore();
 const reversedLayers = computed(() => {

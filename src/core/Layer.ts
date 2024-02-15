@@ -3,6 +3,17 @@ import type { SupportImageSource } from "@/types/WorkStoreType";
 import { getNewCanvas } from "@/utils";
 import { Vec } from "./Vec";
 
+function returnGetID() {
+    let id = 0;
+
+    return () => {
+        id += 1;
+        return id;
+    }
+}
+
+const getID = returnGetID();
+
 export class Layer {
     visibility: boolean;
     source: HTMLCanvasElement;
@@ -13,8 +24,15 @@ export class Layer {
     canvas: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
     pos: Vec;
+    id: number;
 
-    constructor(name: string, source: SupportImageSource, canvas: HTMLCanvasElement) {
+    constructor(name: string | null, source: SupportImageSource, canvas: HTMLCanvasElement) {
+        this.id = getID();
+
+        if( name === null ) {
+            name = "Layer " + this.id;
+        }
+
         this.name = name;
         this.visibility = true;
         this.source = this.formatSource( source );

@@ -40,7 +40,7 @@ import { KeyboardShortcut } from "@/core/KeyboardShortcut";
 import { KeyboardState, PRESSED } from "@/core/KeyboardState";
 import { useToolStore } from "@/stores/ToolStore";
 import ToolList from "@/components/ToolList.vue";
-import LayerSelector from "@/components/LayerSelector.vue";
+import LayerSelector from "@/components/LayerSelector/LayerSelector.vue";
 import LayerRenderer from "./LayerRenderer.vue";
 import { useLayerStore } from "@/stores/LayerStore";
 import { useCanvasStore } from "@/stores/CanvasStore";
