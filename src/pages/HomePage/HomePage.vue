@@ -47,6 +47,7 @@ import { useCanvasStore } from "@/stores/CanvasStore";
 import { useBrushStore } from "@/stores/BrushStore";
 import BrushTool from "@/tools/BrushTool/BrushTool.vue";
 import { usePanStore } from "@/stores/PanStore";
+import { useKeyboardStore } from "@/stores/KeyboardStore";
 
 const toolStore = useToolStore();
 const workStore = useWorkStore();
@@ -114,10 +115,9 @@ loadImage( HugeSampleImage ).then( image => {
     // });
 });
 
-const shortcut = new KeyboardShortcut();
-const keyState = new KeyboardState();
+const keyStore = useKeyboardStore();
 
-keyState.addMapping(" ", (state: number) => {
+keyStore.keyState.addMapping(" ", (state: number) => {
     if( state === PRESSED ) {
         panStore.dragging = true;
     } else {
@@ -125,30 +125,31 @@ keyState.addMapping(" ", (state: number) => {
     }
 });
 
-keyState.listenTo();
+keyStore.keyState.listenTo();
 
-shortcut.add("ctrl", "-", () => {
+keyStore.keyShortcut.add("ctrl", "-", () => {
     canvasStore.zoomOut();
 });
 
-shortcut.add("ctrl", "=", () => {
+keyStore.keyShortcut.add("ctrl", "=", () => {
     canvasStore.zoomIn();
 });
 
-shortcut.add("ctrl", "0", () => {
+keyStore.keyShortcut.add("ctrl", "0", () => {
     canvasStore.setDefaultScale();
     panStore.resetMoveOffset();
 });
 
-shortcut.add("shift", "+", () => {
+keyStore.keyShortcut.add("shift", "+", () => {
     canvasStore.zoomIn();
 });
 
-shortcut.add("shift", "_", () => {
+keyStore.keyShortcut.add("shift", "_", () => {
     canvasStore.zoomOut();
 });
 
-shortcut.startListen();
+keyStore.keyShortcut.startListen();
+toolStore.registerShortcuts();
 
 window.addEventListener("wheel", e => {
     if( e.ctrlKey ) {

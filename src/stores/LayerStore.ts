@@ -14,7 +14,7 @@ export const useLayerStore = defineStore('layer-store', {
   },
 
   actions: {
-    addLayer(source: SupportImageSource, name = null) {
+    addLayer(source: SupportImageSource, name = null as null | string) {
         const canvasStore = useCanvasStore();
         const { canvas } = canvasStore.getEmptyCanvas();
 
