@@ -137,6 +137,7 @@ shortcut.add("ctrl", "=", () => {
 
 shortcut.add("ctrl", "0", () => {
     canvasStore.setDefaultScale();
+    panStore.resetMoveOffset();
 });
 
 shortcut.add("shift", "+", () => {
