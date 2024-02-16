@@ -3,6 +3,7 @@
         <div class="app-upper">
             <button @click="createNewFile">New Canvas</button>
             <button @click="canvasStore.downloadResultCanvas">Save</button>
+            <input type="file" name="" id="">
         </div>
 
         <div class="tool-header">
