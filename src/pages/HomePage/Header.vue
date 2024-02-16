@@ -8,7 +8,7 @@
 
         <div class="tool-header">
             <component
-                v-if="toolStore.currentTool.headerComponent"
+                v-if="toolStore.currentTool && toolStore.currentTool.headerComponent"
                 :is="toolStore.currentTool.headerComponent"
             ></component>
 

@@ -18,7 +18,10 @@
                     <!-- <CropTool></CropTool> -->
 
                     <div class="tool-wrap">
-                        <component :is="toolStore.currentTool.mainComponent"></component>
+                        <component
+                            v-if="toolStore.currentTool"
+                            :is="toolStore.currentTool.mainComponent"
+                        ></component>
                     </div>
                 </div>
             </div>
