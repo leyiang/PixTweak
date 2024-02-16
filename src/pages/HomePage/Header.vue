@@ -1,6 +1,7 @@
 <template>
     <header class="app-header">
         <div class="app-upper">
+            <button @click="createNewFile">New Canvas</button>
             <button @click="canvasStore.downloadResultCanvas">Save</button>
         </div>
 
@@ -19,8 +20,16 @@
 
 <script setup lang="ts">
 import { useCanvasStore } from '@/stores/CanvasStore';
+import { useLayerStore } from '@/stores/LayerStore';
 import { useToolStore } from '@/stores/ToolStore';
 
 const toolStore = useToolStore();
 const canvasStore = useCanvasStore();
+const layerStore = useLayerStore();
+
+function createNewFile() {
+    layerStore.clear();
+    canvasStore.setCanvasSize(500, 500);
+    layerStore.addEmptyLayer();
+}
 </script>

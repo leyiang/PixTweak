@@ -73,6 +73,10 @@ export const useLayerStore = defineStore('layer-store', {
         const tmp = this.layers[index1];
         this.layers[index1] = this.layers[index2];
         this.layers[index2] = tmp;
+    },
+
+    clear() {
+        this.layers = [];
     }
   },
 })
