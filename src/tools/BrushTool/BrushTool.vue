@@ -18,6 +18,7 @@ import { Vec } from "@/core/Vec";
 import { useBrushStore } from "@/stores/BrushStore";
 import { useCanvasStore } from "@/stores/CanvasStore";
 import { useLayerStore } from "@/stores/LayerStore";
+import { usePanStore } from "@/stores/PanStore";
 import { computed, reactive, ref } from "vue";
 
 const cursorInfo = reactive({
@@ -42,8 +43,11 @@ const brushCursorStyle = computed(() => {
 });
 
 const paintStart = ref(false);
+const panStore = usePanStore();
 
 mouseState.onMouseDown(e => {
+    if( panStore.dragging ) return;
+
     // Only left click can draw
     if( e.buttons === 1 ) {
         paintStart.value = true;
